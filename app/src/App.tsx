@@ -32,7 +32,7 @@ function ProtectedRoute() {
 }
 
 function AppLayout() {
-  const { invalidation, session } = useAuth()
+  const { invalidation, session, initializationError } = useAuth()
   const location = useLocation()
   const toast = (location.state as { toast?: string } | null)?.toast
   return (
@@ -49,6 +49,11 @@ function AppLayout() {
       {invalidation !== null && (
         <div className="auth-banner" role="alert">
           認証が切れました。再ログインが必要です。 <Link to="/login">再ログイン</Link>
+        </div>
+      )}
+      {initializationError !== null && session === null && (
+        <div className="auth-banner" role="alert">
+          ログイン処理を完了できませんでした。もう一度お試しください。 <Link to="/login">ログインへ</Link>
         </div>
       )}
       <main className="app-content"><Outlet /></main>

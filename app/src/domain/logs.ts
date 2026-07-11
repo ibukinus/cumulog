@@ -12,7 +12,16 @@ export type LogEntry =
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
-const isValidDateTime = (value: string): boolean => Number.isFinite(Date.parse(value))
+// Lexicon datetime（RFC 3339形式）。Date.parseは日付のみの文字列や実在しない日の正規化を
+// 許容してしまうため、構文と暦の実在性を明示的に検証する
+const DATETIME_PATTERN =
+  /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/
+const isValidDateTime = (value: string): boolean => {
+  const match = DATETIME_PATTERN.exec(value)
+  if (!match) return false
+  if (!isValidActivityDate(match[1])) return false
+  return Number(match[2]) <= 23 && Number(match[3]) <= 59 && Number(match[4]) <= 60
+}
 
 const optionalString = (source: Record<string, unknown>, key: string): string | undefined =>
   typeof source[key] === 'string' ? source[key] : undefined

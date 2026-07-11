@@ -45,7 +45,25 @@ describe('parseLogRecord', () => {
   })
 
   it('不正なcreatedAtをunreadableとする', () => {
-    expect(parseLogRecord('uri', 'cid', { ...baseRecord, createdAt: 'not-a-date' }).kind).toBe('unreadable')
+    for (const createdAt of [
+      'not-a-date',
+      '2026-07-11', // 日付のみ（datetime形式でない）
+      '2026-02-30T00:00:00Z', // 実在しない日
+      '2026-07-11T24:00:00Z', // 時刻範囲外
+      '2026-07-11T12:00:00', // タイムゾーンなし
+    ]) {
+      expect(parseLogRecord('uri', 'cid', { ...baseRecord, createdAt }).kind).toBe('unreadable')
+    }
+  })
+
+  it('正当なdatetime形式のcreatedAtをreadableとする', () => {
+    for (const createdAt of [
+      '2026-07-11T12:00:00Z',
+      '2026-07-11T12:00:00.123Z',
+      '2026-07-11T12:00:00+09:00',
+    ]) {
+      expect(parseLogRecord('uri', 'cid', { ...baseRecord, createdAt }).kind).toBe('readable')
+    }
   })
 
   it('未知のspoiler値はreadableでmajorとして扱う', () => {
