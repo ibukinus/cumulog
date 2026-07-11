@@ -17,10 +17,11 @@ timestamp: 2026-07-11
 
 ## 権限スコープ
 
-* 要求するスコープは、活動ログの作成・閲覧・編集・削除に必要な範囲を原則とする（[アカウント連携](../docs/05-functional/account.md)）
-* PDS側でコレクション単位の限定スコープが利用できる場合は、`jp.mp0.cumulog.log` コレクションへのアクセスに限定して要求する
-* 限定スコープが利用できない間は、汎用スコープ（`atproto` + `transition:generic` 相当）を最小構成として要求し、限定スコープへの移行を実装後の課題として管理する
-* Bluesky共有（Should）を実装する時点で、`app.bsky.feed.post` の作成に必要なスコープを追加要求する。それまでは要求しない
+* 要求するスコープは、活動ログの作成・閲覧・編集・削除に必要な範囲に限定する（[アカウント連携](../docs/05-functional/account.md)）
+* MVPで要求するスコープは `atproto` と `repo:jp.mp0.cumulog.log`（コレクション単位のgranularスコープ）とする
+* リポジトリ全体への広範なアクセスを許す `transition:generic` は要求しない（不要な権限を要求しない要件に反するため）
+* MVPの対象であるBluesky公式PDSはgranularスコープに対応している。将来の任意PDS対応でgranularスコープ未対応のPDSを扱う場合の方針は、その時点で設計する（広範スコープへの暗黙のフォールバックはしない）
+* Bluesky共有（Should）を実装する時点で、`repo:app.bsky.feed.post` を追加要求する。それまでは要求しない
 
 ## 対応PDS判定
 
