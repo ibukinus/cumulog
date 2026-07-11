@@ -3,7 +3,7 @@ type: Design Document
 title: 認証・連携設計
 description: AT Protocol OAuthによる認証、権限スコープ、対応PDS判定、セッション管理、連携解除・利用終了時の扱いを定義する。
 tags: [cumulog, 基本設計, 認証, oauth, atproto]
-timestamp: 2026-07-11
+timestamp: 2026-07-12
 ---
 
 # 認証・連携設計
@@ -45,7 +45,7 @@ MVPはBluesky公式PDSを利用するアカウントのみを対象とする。
 
 * ログアウト時は、ブラウザ上のOAuthセッション情報とアプリ状態を削除する
 * Cumulogはサーバー側にユーザーデータを保持しないため、利用終了時にCumulog側で削除すべき派生データはブラウザ上のデータのみである
-* PDS側に残る認可の取り消しは、ユーザーがPDS（Blueskyの設定画面）側で行えることを設定画面で案内する
+* PDS側に残る認可の取り消しは、ユーザーがPDSのアカウント管理画面（Bluesky公式PDSでは `bsky.social/account` の接続済みアプリ一覧。bsky.appのアプリ設定ではない）で行えることを設定画面で案内する
 * 活動ログレコード自体はログアウト・連携解除では削除されず、ユーザーのリポジトリに残ることを案内する（[公開・データ方針: 利用終了時の扱い](../docs/03-publication-policy.md)）
 
 ## 関連ドキュメント
