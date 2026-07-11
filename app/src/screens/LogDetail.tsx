@@ -12,7 +12,6 @@ import {
   ErrorState,
   Notice,
   SpoilerBadge,
-  Toast,
 } from '../ui/index'
 import styles from './LogDetail.module.css'
 
@@ -52,7 +51,6 @@ export function LogDetail() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [toast, setToast] = useState(false)
 
   if (status === 'idle' || status === 'loading') {
     return <main className={styles.page} aria-live="polite"><p>活動ログを読み込んでいます…</p></main>
@@ -95,7 +93,6 @@ export function LogDetail() {
     try {
       await deleteLog(agent, session.did, currentRkey, entry.cid)
       applyDeleted(entry.uri)
-      setToast(true)
       navigate('/logs', { replace: true, state: { toast: '活動ログを削除しました' } })
     } catch (error) {
       if (error instanceof RecordClientError && error.kind === 'conflict') {
@@ -140,6 +137,5 @@ export function LogDetail() {
       <div className={styles.actions}><Link className={styles.action} to={`/logs/${rkey}/edit`}>編集</Link><Button type="button" variant="danger" onClick={openDeleteDialog} disabled={deleting}>削除</Button></div>
     </>}
     <ConfirmDialog open={dialogOpen} title="活動ログを削除しますか？" description={<DeleteDescription entry={entry} />} confirmLabel="削除する" cancelLabel="取り消す" confirmVariant="danger" onConfirm={() => void handleDelete()} onCancel={() => setDialogOpen(false)} />
-    {toast && <Toast message="活動ログを削除しました" />}
   </main>
 }

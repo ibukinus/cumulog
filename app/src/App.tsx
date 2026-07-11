@@ -1,6 +1,7 @@
-import { BrowserRouter, Link, Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Link, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 
 import { AuthProvider, LogsProvider, useAuth } from './app/index'
+import { Toast } from './ui/index'
 import {
   Landing,
   Login,
@@ -32,6 +33,8 @@ function ProtectedRoute() {
 
 function AppLayout() {
   const { invalidation, session } = useAuth()
+  const location = useLocation()
+  const toast = (location.state as { toast?: string } | null)?.toast
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -49,6 +52,7 @@ function AppLayout() {
         </div>
       )}
       <main className="app-content"><Outlet /></main>
+      {toast !== undefined && <Toast key={location.key} message={toast} />}
     </div>
   )
 }
