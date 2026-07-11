@@ -2,14 +2,14 @@
 
 趣味・鑑賞・イベント参加・創作などの個人的な活動を短いログとして記録し、あとから振り返れるようにする活動ログサービス。活動ログは原則としてAT Protocol上の公開データとして保存される。
 
-このリポジトリは、Cumulogの**要件定義**を管理するリポジトリである。実装コードは含まない。
+このリポジトリは、Cumulogの**要件定義と基本設計**を管理するリポジトリである。実装コードは含まない。
 
 ## ドキュメント構成
 
-要件定義書は [`docs/`](docs/index.md) 配下に、[OKF (Open Knowledge Format)](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) 準拠のドキュメントバンドルとして配置している。
+要件定義書は [`docs/`](docs/index.md) 配下に、基本設計書は [`design/`](design/index.md) 配下に、それぞれ[OKF (Open Knowledge Format)](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) 準拠のドキュメントバンドルとして配置している。
 
-- 読み始めるには → [docs/index.md](docs/index.md)
-- 更新履歴 → [docs/log.md](docs/log.md)
+- 要件定義を読み始めるには → [docs/index.md](docs/index.md)（更新履歴は [docs/log.md](docs/log.md)）
+- 基本設計を読み始めるには → [design/index.md](design/index.md)（更新履歴は [design/log.md](design/log.md)）
 - 再構成前の旧・単一ファイル版 → [archive/](archive/)
 
 ## 表記ルール

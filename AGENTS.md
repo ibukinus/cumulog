@@ -4,17 +4,19 @@
 
 ## リポジトリの性質
 
-- Cumulog（キュムログ）というAT Protocol上の活動ログサービスの**要件定義のみ**を管理するリポジトリ。実装コードは含まない。
-- 成果物はすべてMarkdownドキュメント。エントリポイントは [docs/index.md](docs/index.md)。
+- Cumulog（キュムログ）というAT Protocol上の活動ログサービスの**要件定義と基本設計**を管理するリポジトリ。実装コードは含まない。
+- 成果物はすべてMarkdownドキュメント。要件定義のエントリポイントは [docs/index.md](docs/index.md)、基本設計のエントリポイントは [design/index.md](design/index.md)。
 - `archive/` は再構成前の旧版であり、**編集・参照更新の対象にしない**（歴史的資料として保存）。
 
 ## ドキュメント構成（OKF準拠）
 
-`docs/` は [OKF (Open Knowledge Format) v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) 準拠のドキュメントバンドル。
+`docs/`（要件定義）と `design/`（基本設計）は、それぞれ [OKF (Open Knowledge Format) v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) 準拠のドキュメントバンドル。
 
 - `index.md` と `log.md` はOKFの予約ファイル。それ以外の全`.md`はYAML frontmatterを持つ。
 - frontmatterは `type`（必須）、`title`、`description`、`tags`、`timestamp`（ISO 8601、`YYYY-MM-DD`）を付ける。
-- トップレベルは `01-` 〜 `10-` の章番号つきファイル。`05-functional/` 配下は1機能=1ファイルで連番なし（意味ベースのkebab-case英語名）。
+- `docs/` のトップレベルは `01-` 〜 `10-` の章番号つきファイル。`05-functional/` 配下は1機能=1ファイルで連番なし（意味ベースのkebab-case英語名）。
+- `design/` は `01-` 〜 `08-` の章番号つきファイル。編集ルール・文体は `docs/` と同様に適用し、変更は [design/log.md](design/log.md) に記録する。
+- 要件と設計が矛盾する場合は要件（`docs/`）が正。設計変更で要件の意味が変わる場合は、先に `docs/` 側を更新する。
 
 ## 編集ルール
 
@@ -54,4 +56,5 @@
 
 ## スコープ外の作業
 
-- 実装コード、Lexiconスキーマ、API設計などはこのリポジトリの対象外（[docs/10-open-issues.md](docs/10-open-issues.md) に列挙された基本設計以降の論点）。求められた場合は、別リポジトリまたは新しいバンドルとして扱うことを提案する。
+- 実装コード（アプリ本体、Lexiconスキーマ定義ファイルを含む）はこのリポジトリの対象外。実装は別リポジトリで行い、[design/](design/index.md) の設計と同期させる。
+- 基本設計の論点は [design/](design/index.md) で扱う。詳細な実装判断（ライブラリのバージョン、細かなUI文言など）は実装リポジトリ側に委ねる。
