@@ -21,7 +21,7 @@ timestamp: 2026-07-11
 * MVPで要求するスコープは `atproto` と `repo:jp.mp0.cumulog.log`（コレクション単位のgranularスコープ）とする
 * リポジトリ全体への広範なアクセスを許す `transition:generic` は要求しない（不要な権限を要求しない要件に反するため）
 * MVPの対象であるBluesky公式PDSはgranularスコープに対応している。将来の任意PDS対応でgranularスコープ未対応のPDSを扱う場合の方針は、その時点で設計する（広範スコープへの暗黙のフォールバックはしない）
-* Bluesky共有（Should）を実装する時点で、`repo:app.bsky.feed.post` を追加要求する。それまでは要求しない
+* Bluesky共有（Should）を実装する時点で、投稿の作成のみに絞ったスコープ `repo:app.bsky.feed.post?action=create` を追加要求する。それまでは要求しない（共有に既存投稿の更新・削除権限は不要なため）
 
 ## 対応PDS判定
 
