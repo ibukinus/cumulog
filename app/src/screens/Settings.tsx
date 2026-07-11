@@ -58,7 +58,9 @@ export function Settings() {
         <h2 className={styles.sectionTitle}>連携の解除</h2>
         <p>
           Cumulogはサーバー側にアカウント情報を保持していないため、Cumulog側から連携を解除する操作はありません。
-          Blueskyアカウントへの認可そのものを取り消したい場合は、Bluesky（PDS）側の設定画面から行ってください。
+          Blueskyアカウントへの認可そのものを取り消したい場合は、PDSのアカウント管理画面（
+          <a href="https://bsky.social/account" target="_blank" rel="noopener noreferrer">bsky.social/account</a>
+          ）の接続済みアプリの一覧から行ってください（bsky.appのアプリ設定ではなく、PDSの管理画面にあります）。
         </p>
       </section>
 
