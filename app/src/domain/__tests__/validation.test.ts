@@ -44,6 +44,14 @@ describe('validateActivityLog', () => {
     expect(validateActivityLog({ ...baseInput(), urls: Array.from({ length: 11 }, (_, i) => `https://example.com/${i}`) }).ok).toBe(false)
   })
 
+  it('URLの前後空白をトリムして保存し、空欄のURL入力は除去する', () => {
+    const result = validateActivityLog({ ...baseInput(), urls: [' https://example.com ', '', '  '] })
+    expect(result).toMatchObject({ ok: true, value: { urls: ['https://example.com'] } })
+    const empty = validateActivityLog({ ...baseInput(), urls: ['', ' '] })
+    expect(empty.ok).toBe(true)
+    if (empty.ok) expect(empty.value).not.toHaveProperty('urls')
+  })
+
   it('制御文字を除去し、メモの改行とタブは保持する', () => {
     const result = validateActivityLog({ ...baseInput(), title: ' A\u0000B ', note: ' A\n\t\u0001B ' })
     expect(result).toMatchObject({ ok: true, value: { title: 'AB', note: 'A\n\tB' } })

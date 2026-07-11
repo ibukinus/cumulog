@@ -40,8 +40,13 @@ export function LogCreate() {
       const agent = getAgent()
       if (agent === null) throw new RecordClientError('auth-expired')
       await createLog(agent, session.did, value)
-      // createLog内で採番されたcreatedAtを正確に反映するためPDSから再取得する。
-      await reload()
+      // ここから先は保存成功。後続の失敗を保存失敗として扱うと再試行で二重登録になるため、
+      // 一覧の再取得（createLog内で採番されたcreatedAtの反映）の失敗は一覧側のエラー表示に委ねる
+      try {
+        await reload()
+      } catch {
+        // LogsProviderが状態としてエラーを保持する
+      }
       navigate('/logs', { replace: true, state: { toast: '活動ログを保存しました。' } })
     } catch (cause) {
       const clientError = cause instanceof RecordClientError ? cause : new RecordClientError('failed', cause)

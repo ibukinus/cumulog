@@ -60,6 +60,7 @@ export function validateActivityLog(input: ActivityLogFormInput): ValidationResu
   const subject = normalizeText(input.subject)
   const note = normalizeText(input.note)
   const tags = input.tags.map(normalizeText).filter((tag) => tag !== '')
+  const urls = input.urls.map((url) => url.trim()).filter((url) => url !== '')
 
   if (title === '') {
     errors.push({ field: 'title', message: 'タイトルを入力してください。' })
@@ -98,13 +99,13 @@ export function validateActivityLog(input: ActivityLogFormInput): ValidationResu
     errors.push({ field: 'tags', message: `各タグは${TAG_MAX_GRAPHEMES}文字以内で入力してください。` })
   }
 
-  if (input.urls.length > URLS_MAX_ITEMS) {
+  if (urls.length > URLS_MAX_ITEMS) {
     errors.push({ field: 'urls', message: `外部URLは${URLS_MAX_ITEMS}件以内にしてください。` })
   }
-  if (input.urls.some((url) => url.length > URL_MAX_LENGTH)) {
+  if (urls.some((url) => url.length > URL_MAX_LENGTH)) {
     errors.push({ field: 'urls', message: `外部URLは1件${URL_MAX_LENGTH}文字以内で入力してください。` })
   }
-  if (input.urls.some((url) => {
+  if (urls.some((url) => {
     try {
       const parsed = new URL(url)
       return parsed.protocol !== 'http:' && parsed.protocol !== 'https:'
@@ -126,6 +127,6 @@ export function validateActivityLog(input: ActivityLogFormInput): ValidationResu
   addOptionalText(value, 'subject', subject)
   addOptionalText(value, 'note', note)
   if (tags.length > 0) value.tags = tags
-  if (input.urls.length > 0) value.urls = input.urls
+  if (urls.length > 0) value.urls = urls
   return { ok: true, value }
 }
