@@ -61,13 +61,13 @@ describe('PDS record client', () => {
       repo: did,
       collection: CUMULOG_LOG_COLLECTION,
       limit: 100,
-    })
+    }, { signal: expect.any(AbortSignal) })
     expect(listRecords).toHaveBeenNthCalledWith(2, {
       repo: did,
       collection: CUMULOG_LOG_COLLECTION,
       limit: 100,
       cursor: 'next',
-    })
+    }, { signal: expect.any(AbortSignal) })
   })
 
   it('creates a record in the authenticated repository with a client timestamp', async () => {
@@ -94,7 +94,7 @@ describe('PDS record client', () => {
         spoiler: 'minor',
         createdAt: '2026-07-11T12:34:56.789Z',
       },
-    })
+    }, { signal: expect.any(AbortSignal) })
   })
 
   it('uses record CID CAS for updates and preserves createdAt', async () => {
@@ -112,7 +112,7 @@ describe('PDS record client', () => {
       rkey: 'key',
       record: value,
       swapRecord: 'old-cid',
-    })
+    }, { signal: expect.any(AbortSignal) })
   })
 
   it('uses record CID CAS for deletes', async () => {
@@ -123,7 +123,20 @@ describe('PDS record client', () => {
       collection: CUMULOG_LOG_COLLECTION,
       rkey: 'key',
       swapRecord: 'old-cid',
-    })
+    }, { signal: expect.any(AbortSignal) })
+  })
+
+  it('classifies timed-out writes as maybe-saved and timed-out reads as failed', async () => {
+    const timeout = new DOMException('The operation timed out', 'TimeoutError')
+    const createRecord = vi.fn().mockRejectedValue(timeout)
+    await expect(createLog(agentWith({ createRecord }), did, {
+      title: '読書',
+      activityDate: '2026-07-10',
+      spoiler: 'none',
+    })).rejects.toEqual(expectKind('maybe-saved'))
+
+    const listRecords = vi.fn().mockRejectedValue(timeout)
+    await expect(listAllLogs(agentWith({ listRecords }), did)).rejects.toEqual(expectKind('failed'))
   })
 
   it.each(['putRecord', 'deleteRecord'])('classifies %s InvalidSwap as conflict', async (method) => {
