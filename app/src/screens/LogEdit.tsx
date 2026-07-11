@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth, useLogs } from '../app/index'
 import { getAgent } from '../atproto/oauth'
 import { RecordClientError, updateLog } from '../atproto/records'
-import { collectCategories, collectTags, CUMULOG_LOG_COLLECTION, rkeyFromAtUri, type ActivityLogRecordInput } from '../domain/index'
+import { collectCategories, collectTags, CUMULOG_LOG_COLLECTION, rkeyFromAtUri, type ActivityLogRecordInput, type CumulogLogRecord } from '../domain/index'
 import { Button, ErrorState, Notice } from '../ui/index'
 import { LogForm } from './LogForm'
 
@@ -23,6 +23,7 @@ export function LogEdit() {
   if (entry === undefined || entry.kind === 'unreadable') return <section><h1>この活動ログは編集できません</h1><p>{entry === undefined ? '活動ログが見つかりません。削除済みか、別の場所で変更された可能性があります。' : '読み込めない形式の活動ログは編集できません。詳細画面から確認してください。'}</p><Link to={`/logs/${rkey}`}>活動ログの詳細へ戻る</Link></section>
 
   const record = entry.record
+  const swapCid = entry.cid
 
   function errorContent(): ReactNode {
     if (error === null) return null
@@ -43,8 +44,8 @@ export function LogEdit() {
       const agent = getAgent()
       if (agent === null) throw new RecordClientError('auth-expired')
       // recordを展開すると空に編集した任意項目が旧値のまま残るため、検証済みのvalueのみを正とする
-      const updatedRecord = { ...value, $type: CUMULOG_LOG_COLLECTION, createdAt: record.createdAt }
-      const result = await updateLog(agent, session.did, rkey, updatedRecord, entry.cid)
+      const updatedRecord: CumulogLogRecord = { ...value, $type: CUMULOG_LOG_COLLECTION, createdAt: record.createdAt }
+      const result = await updateLog(agent, session.did, rkey, updatedRecord, swapCid)
       logs.applyUpdated(result.uri, result.cid, updatedRecord)
       navigate(`/logs/${rkey}`, { replace: true, state: { toast: '活動ログを更新しました。' } })
     } catch (cause) {
