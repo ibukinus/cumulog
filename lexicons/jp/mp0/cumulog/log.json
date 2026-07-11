@@ -1,0 +1,86 @@
+{
+  "lexicon": 1,
+  "id": "jp.mp0.cumulog.log",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "title",
+          "activityDate",
+          "spoiler",
+          "createdAt"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the activity log.",
+            "maxGraphemes": 100,
+            "maxLength": 1000
+          },
+          "activityDate": {
+            "type": "string",
+            "description": "Date of the activity in YYYY-MM-DD format.",
+            "maxLength": 10
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the activity.",
+            "maxGraphemes": 30,
+            "maxLength": 300
+          },
+          "subject": {
+            "type": "string",
+            "description": "Subject of the activity.",
+            "maxGraphemes": 100,
+            "maxLength": 1000
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags for the activity.",
+            "maxLength": 20,
+            "items": {
+              "type": "string",
+              "description": "A tag for the activity.",
+              "maxGraphemes": 30,
+              "maxLength": 300
+            }
+          },
+          "urls": {
+            "type": "array",
+            "description": "External URLs related to the activity.",
+            "maxLength": 10,
+            "items": {
+              "type": "string",
+              "description": "An external URL related to the activity.",
+              "format": "uri",
+              "maxLength": 2000
+            }
+          },
+          "note": {
+            "type": "string",
+            "description": "Additional notes about the activity.",
+            "maxGraphemes": 1000,
+            "maxLength": 10000
+          },
+          "spoiler": {
+            "type": "string",
+            "description": "Spoiler level of the activity log.",
+            "knownValues": [
+              "none",
+              "minor",
+              "major"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp in ISO 8601 format.",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  }
+}
