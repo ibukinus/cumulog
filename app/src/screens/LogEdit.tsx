@@ -18,9 +18,13 @@ export function LogEdit() {
   const [error, setError] = useState<RecordClientError | null>(null)
   const [retry, setRetry] = useState<(() => void) | null>(null)
 
-  if (logs.status === 'idle' || logs.status === 'loading') return <p aria-live="polite">活動ログを読み込んでいます…</p>
-  if (logs.status === 'error') return <ErrorState title="編集する活動ログを取得できませんでした" description="通信に失敗しました。入力を始める前に、もう一度読み込んでください。" onRetry={() => void logs.reload()} />
-  if (entry === undefined || entry.kind === 'unreadable') return <section><h1>この活動ログは編集できません</h1><p>{entry === undefined ? '活動ログが見つかりません。削除済みか、別の場所で変更された可能性があります。' : '読み込めない形式の活動ログは編集できません。詳細画面から確認してください。'}</p><Link to={`/logs/${rkey}`}>活動ログの詳細へ戻る</Link></section>
+  // entryが見つかっている間はreload中でもフォームを維持する（アンマウントすると編集中の入力が失われるため）
+  if (entry === undefined) {
+    if (logs.status === 'idle' || logs.status === 'loading') return <p aria-live="polite">活動ログを読み込んでいます…</p>
+    if (logs.status === 'error') return <ErrorState title="編集する活動ログを取得できませんでした" description="通信に失敗しました。入力を始める前に、もう一度読み込んでください。" onRetry={() => void logs.reload()} />
+    return <section><h1>この活動ログは編集できません</h1><p>活動ログが見つかりません。削除済みか、別の場所で変更された可能性があります。</p><Link to="/logs">一覧へ戻る</Link></section>
+  }
+  if (entry.kind === 'unreadable') return <section><h1>この活動ログは編集できません</h1><p>読み込めない形式の活動ログは編集できません。詳細画面から確認してください。</p><Link to={`/logs/${rkey}`}>活動ログの詳細へ戻る</Link></section>
 
   const record = entry.record
   const swapCid = entry.cid
