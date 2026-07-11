@@ -15,7 +15,7 @@
 - `index.md` と `log.md` はOKFの予約ファイル。それ以外の全`.md`はYAML frontmatterを持つ。
 - frontmatterは `type`（必須）、`title`、`description`、`tags`、`timestamp`（ISO 8601、`YYYY-MM-DD`）を付ける。
 - `docs/` のトップレベルは `01-` 〜 `10-` の章番号つきファイル。`05-functional/` 配下は1機能=1ファイルで連番なし（意味ベースのkebab-case英語名）。
-- `design/` は `01-` 〜 `08-` の章番号つきファイル。編集ルール・文体は `docs/` と同様に適用し、変更は [design/log.md](design/log.md) に記録する。
+- `design/` は `01-` 〜 `09-` の章番号つきファイル。編集ルール・文体は `docs/` と同様に適用し、変更は [design/log.md](design/log.md) に記録する。
 - 要件と設計が矛盾する場合は要件（`docs/`）が正。設計変更で要件の意味が変わる場合は、先に `docs/` 側を更新する。
 
 ## 編集ルール
