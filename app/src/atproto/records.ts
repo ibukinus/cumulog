@@ -9,6 +9,15 @@ import type { ActivityLogRecordInput } from '../domain/validation'
 
 const LIST_RECORDS_LIMIT = 100
 
+// XRPC呼び出しの上限時間。オフライン等でfetchが完了しない場合に
+// 「保存中」のまま固まるのを防ぐ（超過時は書き込み=maybe-saved / 読み取り=failed）
+const XRPC_TIMEOUT_MS = 30_000
+
+const timeoutSignal = () => AbortSignal.timeout(XRPC_TIMEOUT_MS)
+
+const isAbortLike = (cause: unknown): boolean =>
+  cause instanceof DOMException && (cause.name === 'TimeoutError' || cause.name === 'AbortError')
+
 export type RecordErrorKind =
   | 'auth-expired'
   | 'permission'
@@ -47,6 +56,10 @@ function classifyError(cause: unknown, operation: Operation): RecordClientError 
   if (operation === 'write' && cause instanceof TypeError) {
     return new RecordClientError('maybe-saved', cause)
   }
+  // タイムアウト・中断は、書き込みではリクエスト到達後の失敗と区別できない
+  if (isAbortLike(cause)) {
+    return new RecordClientError(operation === 'write' ? 'maybe-saved' : 'failed', cause)
+  }
   return new RecordClientError('failed', cause)
 }
 
@@ -68,7 +81,7 @@ export async function listAllLogs(agent: Agent, did: string): Promise<LogEntry[]
         collection: CUMULOG_LOG_COLLECTION,
         limit: LIST_RECORDS_LIMIT,
         ...(cursor === undefined ? {} : { cursor }),
-      })
+      }, { signal: timeoutSignal() })
       for (const item of response.data.records) {
         entries.push(parseLogRecord(item.uri, requireCid(item.cid), item.value))
       }
@@ -86,7 +99,7 @@ export async function getLog(agent: Agent, did: string, rkey: string): Promise<L
       repo: did,
       collection: CUMULOG_LOG_COLLECTION,
       rkey,
-    })
+    }, { signal: timeoutSignal() })
     return parseLogRecord(response.data.uri, requireCid(response.data.cid), response.data.value)
   } catch (cause) {
     throw classifyError(cause, 'read')
@@ -107,7 +120,7 @@ export async function createLog(
         ...input,
         createdAt: new Date().toISOString(),
       },
-    })
+    }, { signal: timeoutSignal() })
     return { uri: response.data.uri, cid: requireCid(response.data.cid) }
   } catch (cause) {
     throw classifyError(cause, 'write')
@@ -128,7 +141,7 @@ export async function updateLog(
       rkey,
       record: { ...value },
       swapRecord: swapCid,
-    })
+    }, { signal: timeoutSignal() })
     return { uri: response.data.uri, cid: requireCid(response.data.cid) }
   } catch (cause) {
     throw classifyError(cause, 'write')
@@ -147,7 +160,7 @@ export async function deleteLog(
       collection: CUMULOG_LOG_COLLECTION,
       rkey,
       swapRecord: swapCid,
-    })
+    }, { signal: timeoutSignal() })
   } catch (cause) {
     throw classifyError(cause, 'write')
   }

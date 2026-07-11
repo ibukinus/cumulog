@@ -17,6 +17,7 @@ export function LogEdit() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<RecordClientError | null>(null)
   const [retry, setRetry] = useState<(() => void) | null>(null)
+  const [conflictReloaded, setConflictReloaded] = useState(false)
 
   // entryが見つかっている間はreload中でもフォームを維持する（アンマウントすると編集中の入力が失われるため）
   if (entry === undefined) {
@@ -30,8 +31,16 @@ export function LogEdit() {
   const swapCid = entry.cid
 
   function errorContent(): ReactNode {
-    if (error === null) return null
-    if (error.kind === 'conflict') return <Notice variant="error"><div>対象の活動ログが別の場所で変更されているため、更新しませんでした。入力内容は保持されています。<br /><Button type="button" variant="secondary" onClick={() => void logs.reload()}>最新の一覧を再読み込み</Button></div></Notice>
+    if (error === null) {
+      // 再読み込みの成否はレンダー時のlogs.statusで判定する（reload()は失敗時もresolveするため）
+      if (conflictReloaded) {
+        if (logs.status === 'loading') return null
+        if (logs.status === 'error') return <Notice variant="error"><div>最新の内容を読み込めませんでした。入力内容は保持されています。<br /><Button type="button" variant="secondary" onClick={() => void logs.reload()}>もう一度読み込む</Button></div></Notice>
+        return <Notice variant="info"><p>最新の内容を読み込みました。編集中の入力はそのまま保持しています。内容を確認のうえ、もう一度保存してください。</p></Notice>
+      }
+      return null
+    }
+    if (error.kind === 'conflict') return <Notice variant="error"><div>対象の活動ログが別の場所で変更されているため、更新しませんでした。入力内容は保持されています。<br /><Button type="button" variant="secondary" onClick={() => { setError(null); setConflictReloaded(true); void logs.reload() }}>最新の内容を再読み込み</Button></div></Notice>
     if (error.kind === 'auth-expired') return <Notice variant="error"><p>認証が切れたため更新できませんでした。入力内容は保持されています。<br /><Link to="/login">再ログインしてください</Link>。</p></Notice>
     if (error.kind === 'permission') return <Notice variant="error"><div>更新する権限がありません。再ログインで解決する場合があります。<br /><Link to="/login">再ログインする</Link>{retry && <> または <Button type="button" variant="secondary" onClick={retry}>再試行</Button></>}</div></Notice>
     if (error.kind === 'maybe-saved') return <Notice variant="warning"><div>更新されたか確認できませんでした。再試行する前に<Button type="button" variant="secondary" onClick={() => void logs.reload()}>一覧を再読み込み</Button>して確認してください。</div></Notice>
@@ -44,6 +53,7 @@ export function LogEdit() {
     setSaving(true)
     setError(null)
     setRetry(null)
+    setConflictReloaded(false)
     try {
       const agent = getAgent()
       if (agent === null) throw new RecordClientError('auth-expired')
