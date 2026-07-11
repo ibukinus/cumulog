@@ -1,0 +1,105 @@
+import {
+  CUMULOG_LOG_COLLECTION,
+  type CumulogLogRecord,
+  type SpoilerLevel,
+} from './types'
+import { isValidActivityDate } from './date'
+
+export type LogEntry =
+  | { kind: 'readable'; uri: string; cid: string; record: CumulogLogRecord }
+  | { kind: 'unreadable'; uri: string; cid: string }
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const isValidDateTime = (value: string): boolean => Number.isFinite(Date.parse(value))
+
+const optionalString = (source: Record<string, unknown>, key: string): string | undefined =>
+  typeof source[key] === 'string' ? source[key] : undefined
+
+const optionalStringArray = (
+  source: Record<string, unknown>,
+  key: string,
+): string[] | undefined =>
+  Array.isArray(source[key]) && source[key].every((item) => typeof item === 'string')
+    ? source[key] as string[]
+    : undefined
+
+export const parseLogRecord = (uri: string, cid: string, value: unknown): LogEntry => {
+  if (!isRecord(value)) return { kind: 'unreadable', uri, cid }
+
+  const title = value.title
+  const activityDate = value.activityDate
+  const spoiler = value.spoiler
+  const createdAt = value.createdAt
+  if (
+    typeof title !== 'string' ||
+    typeof activityDate !== 'string' ||
+    !isValidActivityDate(activityDate) ||
+    typeof spoiler !== 'string' ||
+    typeof createdAt !== 'string' ||
+    !isValidDateTime(createdAt)
+  ) {
+    return { kind: 'unreadable', uri, cid }
+  }
+
+  const record: CumulogLogRecord = {
+    $type: CUMULOG_LOG_COLLECTION,
+    title,
+    activityDate,
+    spoiler: spoiler as SpoilerLevel,
+    createdAt,
+  }
+  const category = optionalString(value, 'category')
+  const subject = optionalString(value, 'subject')
+  const tags = optionalStringArray(value, 'tags')
+  const urls = optionalStringArray(value, 'urls')
+  const note = optionalString(value, 'note')
+  if (category !== undefined) record.category = category
+  if (subject !== undefined) record.subject = subject
+  if (tags !== undefined) record.tags = tags
+  if (urls !== undefined) record.urls = urls
+  if (note !== undefined) record.note = note
+
+  return { kind: 'readable', uri, cid, record }
+}
+
+export const effectiveSpoilerLevel = (record: CumulogLogRecord): SpoilerLevel =>
+  record.spoiler === 'none' || record.spoiler === 'minor' || record.spoiler === 'major'
+    ? record.spoiler
+    : 'major'
+
+export const sortLogEntries = (entries: LogEntry[]): LogEntry[] =>
+  [...entries].sort((left, right) => {
+    if (left.kind === 'unreadable') return right.kind === 'unreadable' ? 0 : 1
+    if (right.kind === 'unreadable') return -1
+
+    const activityDifference = right.record.activityDate.localeCompare(left.record.activityDate)
+    if (activityDifference !== 0) return activityDifference
+    return Date.parse(right.record.createdAt) - Date.parse(left.record.createdAt)
+  })
+
+export const filterByTag = (entries: LogEntry[], tag: string): LogEntry[] =>
+  entries.filter(
+    (entry) => entry.kind === 'readable' && entry.record.tags?.includes(tag) === true,
+  )
+
+export const collectCategories = (entries: LogEntry[]): string[] => {
+  const categories = new Set<string>()
+  for (const entry of entries) {
+    if (entry.kind === 'readable' && entry.record.category !== undefined) {
+      categories.add(entry.record.category)
+    }
+  }
+  return [...categories]
+}
+
+export const collectTags = (entries: LogEntry[]): string[] => {
+  const tags = new Set<string>()
+  for (const entry of entries) {
+    if (entry.kind === 'readable' && entry.record.tags !== undefined) {
+      for (const tag of entry.record.tags) tags.add(tag)
+    }
+  }
+  return [...tags]
+}
