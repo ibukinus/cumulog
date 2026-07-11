@@ -19,17 +19,17 @@ timestamp: 2026-07-11
 
 | 項目 | プロパティ | 型 | 必須 | 上限 |
 | --- | --- | --- | --- | --- |
-| タイトル | `title` | string | 必須 | 100書記素（maxLength 400） |
+| タイトル | `title` | string | 必須 | 100書記素（maxLength 1000） |
 | 活動日 | `activityDate` | string（`YYYY-MM-DD`） | 必須 | 10文字 |
-| 活動種別 | `category` | string | 任意 | 30書記素（maxLength 120） |
-| 対象名 | `subject` | string | 任意 | 100書記素（maxLength 400） |
-| タグ | `tags` | string の array | 任意 | 20件、各30書記素（maxLength 120） |
+| 活動種別 | `category` | string | 任意 | 30書記素（maxLength 300） |
+| 対象名 | `subject` | string | 任意 | 100書記素（maxLength 1000） |
+| タグ | `tags` | string の array | 任意 | 20件、各30書記素（maxLength 300） |
 | 外部URL | `urls` | string（format: `uri`）の array | 任意 | 10件、各2000文字 |
-| メモ | `note` | string | 任意 | 1000書記素（maxLength 4000） |
+| メモ | `note` | string | 任意 | 1000書記素（maxLength 10000） |
 | ネタバレ | `spoiler` | string（knownValues: `none` / `minor` / `major`） | 必須 | — |
 | 作成日時 | `createdAt` | string（format: `datetime`） | 必須 | — |
 
-* 文字数上限はLexiconの `maxGraphemes` で表現し、あわせてバイト長上限 `maxLength` を書記素上限の4倍で設定する
+* 文字数上限はLexiconの `maxGraphemes` で表現し、あわせてバイト長上限 `maxLength` を書記素上限の10倍で設定する（`maxLength` はUTF-8バイト数でカウントされ、絵文字等の書記素クラスタは1書記素で4バイトを大きく超えるため。Bluesky公式Lexiconと同じ比率）
 * 上限値は「短いログ」というプロダクトの位置づけ（[入力項目の考え方](../docs/05-functional/input-policy.md)）にもとづく設計値であり、実利用の知見により将来変更してよい
 
 ## 項目ごとの補足
