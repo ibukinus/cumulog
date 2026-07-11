@@ -2,6 +2,8 @@
 
 ## 2026-07-11
 
+* **Update**: [09-design-language.md](09-design-language.md) を追加。UIデザインの原則（温かみ・親しみやすいトーン、セマンティックトークンによるカラー設計、状態表現の原則、タイポグラフィ・レイアウト、既存ライブラリ＋トークン上書きのコンポーネント方針）を定義。ダークモードはMVP対象外とし、トークン差し替えで将来対応できる構造とする。具体的なトークン値は実装リポジトリで管理する。
+
 * **Update**: PR #1 のCodexレビュー指摘（6巡目）に対応。必須項目の値が形式不正なレコード（実在しない日付等）も「読み込めない活動ログ」として扱うことを明記（[02-lexicon.md](02-lexicon.md)）。
 * **Update**: PR #1 のCodexレビュー指摘（5巡目）に対応。(1) タイトルのトリムと非空検証を明記（[02-lexicon.md](02-lexicon.md)）。(2) Bluesky共有時の追加スコープを作成のみの `repo:app.bsky.feed.post?action=create` に限定（[03-auth.md](03-auth.md)）。
 * **Update**: PR #1 のCodexレビュー指摘（4巡目）に対応。権限スコープを `atproto` + `repo:jp.mp0.cumulog.log` のgranularスコープとして確定し、`transition:generic` は要求しないことを明記（[03-auth.md](03-auth.md)）。
