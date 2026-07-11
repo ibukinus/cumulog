@@ -48,6 +48,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       (initializedSession) => {
         if (!active) return
         setSession(initializedSession)
+        // セッションが確立できた＝認証は有効。初期化中に発生した失効通知（古いセッションの
+        // 掃除等によるもの）は現在のセッションには当たらないため取り下げる
+        if (initializedSession !== null) setInvalidation(null)
         setStatus('ready')
       },
       (error: unknown) => {

@@ -1,7 +1,6 @@
 import { Agent } from '@atproto/api'
 import {
   BrowserOAuthClient,
-  buildLoopbackClientId,
   type OAuthClientMetadataInput,
   type OAuthSession,
 } from '@atproto/oauth-client-browser'
@@ -68,11 +67,15 @@ async function createClient(): Promise<BrowserOAuthClient> {
   const options = {
     handleResolver: HANDLE_RESOLVER,
     onDelete: (sub: `did:${string}:${string}`, cause: unknown) => {
+      if (signingOutDid === sub) return
+      // アクティブなセッションと無関係なsubの削除（古い残骸の掃除等）は失効として扱わない
+      if (oauthSession !== null && oauthSession.sub !== sub) return
       if (oauthSession?.sub === sub) {
         oauthSession = null
         sessionInfo = null
       }
-      if (signingOutDid === sub) return
+      // 原因調査用（トークンは含まれない）。ログイン直後に一度出る場合は旧セッションの掃除で無害
+      console.warn('[cumulog] OAuthセッションが削除されました', sub, cause)
       for (const listener of invalidationListeners) {
         listener({ did: sub, cause })
       }
@@ -81,9 +84,14 @@ async function createClient(): Promise<BrowserOAuthClient> {
   if (import.meta.env.PROD) {
     return new BrowserOAuthClient({ ...options, clientMetadata: productionMetadata })
   }
-  const clientId = new URL(buildLoopbackClientId(window.location))
-  clientId.searchParams.set('scope', productionMetadata.scope ?? 'atproto')
-  return BrowserOAuthClient.load({ ...options, clientId: clientId.href })
+  // ループバッククライアントIDはパス成分を含めない制約があるため、現在のページの
+  // パスに依存させず固定で組み立てる（/login等でのクライアント生成で壊れないように）
+  const port = window.location.port ? `:${window.location.port}` : ''
+  const params = new URLSearchParams({
+    redirect_uri: `http://127.0.0.1${port}/oauth/callback`,
+    scope: productionMetadata.scope ?? 'atproto',
+  })
+  return BrowserOAuthClient.load({ ...options, clientId: `http://localhost?${params.toString()}` })
 }
 
 function getClient(): Promise<BrowserOAuthClient> {
