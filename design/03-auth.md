@@ -27,7 +27,8 @@ timestamp: 2026-07-11
 MVPはBluesky公式PDSを利用するアカウントのみを対象とする。
 
 * ログイン時にhandleからDIDを解決し、DIDドキュメントの `#atproto_pds` サービスエンドポイントを取得する
-* エンドポイントのホストが `bsky.social` または `*.host.bsky.network` の場合を「Bluesky公式PDS」と判定する
+* エンドポイントのホストが `bsky.social` に一致する、または `.host.bsky.network` で終わる（サフィックス一致）場合を「Bluesky公式PDS」と判定する
+* サフィックス一致とするのは、Bluesky公式PDSのホストが `morel.us-east.host.bsky.network` のような複数ラベルを持つためである（1ラベルのみのワイルドカード一致では公式PDSを弾いてしまう）
 * 判定に該当しない場合は、認可フローに進まず「MVPではBluesky公式PDSのアカウントのみ利用できる」旨と対象外である理由を表示する
 * 判定用のホストパターンは設定値として保持し、Bluesky側のインフラ変更に追従できるようにする
 
