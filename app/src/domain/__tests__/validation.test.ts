@@ -20,7 +20,8 @@ describe('validateActivityLog', () => {
   it('書記素数を検証し、結合絵文字を1書記素として扱う', () => {
     expect(validateActivityLog({ ...baseInput(), title: 'あ'.repeat(100) }).ok).toBe(true)
     expect(validateActivityLog({ ...baseInput(), title: 'あ'.repeat(101) }).ok).toBe(false)
-    expect(validateActivityLog({ ...baseInput(), title: '👨‍👩‍👧‍👦'.repeat(100) }).ok).toBe(true)
+    // 結合絵文字はUTF-16長では11だが1書記素（30個=30書記素・750バイトで両上限内）
+    expect(validateActivityLog({ ...baseInput(), title: '👨‍👩‍👧‍👦'.repeat(30) }).ok).toBe(true)
   })
 
   it('活動日の形式と実在性を検証し、未来日を許可する', () => {
