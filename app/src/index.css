@@ -1,0 +1,83 @@
+@import './ui/tokens.css';
+
+:root {
+  color-scheme: light;
+  font: var(--font-size-body) / var(--line-height-body) var(--font-family-system);
+  color: var(--color-text-body);
+  background: var(--color-bg-page);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--color-bg-page);
+  color: var(--color-text-body);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+dialog:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+.app-shell {
+  min-height: 100svh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+}
+
+.app-header nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.service-name {
+  color: inherit;
+  font-size: var(--font-size-heading);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-banner {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.app-content,
+.loading {
+  width: min(100% - (2 * var(--space-4)), 48rem);
+  margin-inline: auto;
+  padding-block: var(--space-6);
+}

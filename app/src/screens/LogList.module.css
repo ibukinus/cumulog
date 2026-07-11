@@ -1,0 +1,24 @@
+.screen { display: grid; gap: var(--space-5); }
+.header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-3); }
+.header h1 { margin: 0; font-size: var(--font-size-heading); line-height: var(--line-height-heading); }
+.loading { margin: 0; padding: var(--space-10) var(--space-4); color: var(--color-text-muted); text-align: center; }
+.filter { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-small); background: var(--color-bg-accent); }
+.list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.row { display: grid; gap: var(--space-2); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-medium); background: var(--color-bg-card); box-shadow: var(--shadow-card); cursor: pointer; }
+.row:hover { border-color: var(--color-border-strong); }
+.row:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+.date { color: var(--color-text-muted); font-size: var(--font-size-small); }
+.title { margin: 0; font-size: var(--font-size-body); line-height: var(--line-height-body); }
+.metadata { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0; color: var(--color-text-muted); }
+.metadata span + span::before { content: "·"; margin-inline-end: var(--space-4); }
+.labels { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+.tag { min-height: 44px; padding: var(--space-2) var(--space-3); border: 0; border-radius: 999px; background: var(--color-accent-soft); color: var(--color-accent); font-weight: 650; cursor: pointer; }
+.tag:hover { text-decoration: underline; }
+.urlIndicator { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 28px; color: var(--color-text-muted); font-size: var(--font-size-small); }
+.icon { width: 20px; height: 20px; flex: 0 0 20px; }
+.uri { overflow-wrap: anywhere; margin: 0; color: var(--color-text-muted); font-size: var(--font-size-small); }
+
+@media (max-width: 30rem) {
+  .header > button { width: 100%; }
+  .filter > button { width: 100%; }
+}
