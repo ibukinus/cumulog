@@ -44,6 +44,14 @@ describe('validateActivityLog', () => {
     expect(validateActivityLog({ ...baseInput(), urls: Array.from({ length: 11 }, (_, i) => `https://example.com/${i}`) }).ok).toBe(false)
   })
 
+  it('書記素数の上限内でもUTF-8バイト上限を超える入力はエラーとする', () => {
+    // 家族絵文字は1書記素だが25バイト。50個で1250バイト > タイトル上限1000バイト
+    const emoji = '👨‍👩‍👧‍👦'.repeat(50)
+    const result = validateActivityLog({ ...baseInput(), title: emoji })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.errors[0].field).toBe('title')
+  })
+
   it('URLの前後空白をトリムして保存し、空欄のURL入力は除去する', () => {
     const result = validateActivityLog({ ...baseInput(), urls: [' https://example.com ', '', '  '] })
     expect(result).toMatchObject({ ok: true, value: { urls: ['https://example.com'] } })

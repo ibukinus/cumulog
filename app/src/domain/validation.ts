@@ -1,11 +1,16 @@
 import type { CumulogLogRecord, SpoilerLevel } from './types'
 import { isValidActivityDate } from './date'
 import {
+  CATEGORY_MAX_BYTES,
   CATEGORY_MAX_GRAPHEMES,
+  NOTE_MAX_BYTES,
   NOTE_MAX_GRAPHEMES,
+  SUBJECT_MAX_BYTES,
   SUBJECT_MAX_GRAPHEMES,
   TAGS_MAX_ITEMS,
+  TAG_MAX_BYTES,
   TAG_MAX_GRAPHEMES,
+  TITLE_MAX_BYTES,
   TITLE_MAX_GRAPHEMES,
   URLS_MAX_ITEMS,
   URL_MAX_LENGTH,
@@ -45,6 +50,15 @@ function graphemeLength(value: string): number {
   return Array.from(graphemeSegmenter.segment(value)).length
 }
 
+const textEncoder = new TextEncoder()
+
+function byteLength(value: string): number {
+  return textEncoder.encode(value).length
+}
+
+const BYTE_LIMIT_MESSAGE =
+  'が長すぎます。絵文字などは見た目より多くの容量を使うため、内容を短くしてください。'
+
 function addOptionalText(
   record: ActivityLogRecordInput,
   field: 'category' | 'subject' | 'note',
@@ -66,6 +80,8 @@ export function validateActivityLog(input: ActivityLogFormInput): ValidationResu
     errors.push({ field: 'title', message: 'タイトルを入力してください。' })
   } else if (graphemeLength(title) > TITLE_MAX_GRAPHEMES) {
     errors.push({ field: 'title', message: `タイトルは${TITLE_MAX_GRAPHEMES}文字以内で入力してください。` })
+  } else if (byteLength(title) > TITLE_MAX_BYTES) {
+    errors.push({ field: 'title', message: `タイトル${BYTE_LIMIT_MESSAGE}` })
   }
 
   if (!isValidActivityDate(input.activityDate)) {
@@ -77,14 +93,16 @@ export function validateActivityLog(input: ActivityLogFormInput): ValidationResu
     errors.push({ field: 'spoiler', message: 'ネタバレの設定を選び直してください。' })
   }
 
-  const optionalFields: Array<['category' | 'subject' | 'note', string, number, string]> = [
-    ['category', category, CATEGORY_MAX_GRAPHEMES, '活動種別'],
-    ['subject', subject, SUBJECT_MAX_GRAPHEMES, '対象名'],
-    ['note', note, NOTE_MAX_GRAPHEMES, 'メモ'],
+  const optionalFields: Array<['category' | 'subject' | 'note', string, number, number, string]> = [
+    ['category', category, CATEGORY_MAX_GRAPHEMES, CATEGORY_MAX_BYTES, '活動種別'],
+    ['subject', subject, SUBJECT_MAX_GRAPHEMES, SUBJECT_MAX_BYTES, '対象名'],
+    ['note', note, NOTE_MAX_GRAPHEMES, NOTE_MAX_BYTES, 'メモ'],
   ]
-  for (const [field, value, max, label] of optionalFields) {
+  for (const [field, value, max, maxBytes, label] of optionalFields) {
     if (graphemeLength(value) > max) {
       errors.push({ field, message: `${label}は${max}文字以内で入力してください。` })
+    } else if (byteLength(value) > maxBytes) {
+      errors.push({ field, message: `${label}${BYTE_LIMIT_MESSAGE}` })
     }
   }
 
@@ -97,12 +115,14 @@ export function validateActivityLog(input: ActivityLogFormInput): ValidationResu
   }
   if (tags.some((tag) => graphemeLength(tag) > TAG_MAX_GRAPHEMES)) {
     errors.push({ field: 'tags', message: `各タグは${TAG_MAX_GRAPHEMES}文字以内で入力してください。` })
+  } else if (tags.some((tag) => byteLength(tag) > TAG_MAX_BYTES)) {
+    errors.push({ field: 'tags', message: `タグ${BYTE_LIMIT_MESSAGE}` })
   }
 
   if (urls.length > URLS_MAX_ITEMS) {
     errors.push({ field: 'urls', message: `外部URLは${URLS_MAX_ITEMS}件以内にしてください。` })
   }
-  if (urls.some((url) => url.length > URL_MAX_LENGTH)) {
+  if (urls.some((url) => byteLength(url) > URL_MAX_LENGTH)) {
     errors.push({ field: 'urls', message: `外部URLは1件${URL_MAX_LENGTH}文字以内で入力してください。` })
   }
   if (urls.some((url) => {

@@ -11,6 +11,13 @@ export const TAGS_MAX_ITEMS = 20
 export const URLS_MAX_ITEMS = 10
 export const URL_MAX_LENGTH = 2000
 
+// LexiconのmaxLength（UTF-8バイト長。書記素上限の10倍。lexicons/jp/mp0/cumulog/log.json と一致させること）
+export const TITLE_MAX_BYTES = 1000
+export const CATEGORY_MAX_BYTES = 300
+export const SUBJECT_MAX_BYTES = 1000
+export const TAG_MAX_BYTES = 300
+export const NOTE_MAX_BYTES = 10000
+
 export interface CumulogLogRecord {
   $type: typeof CUMULOG_LOG_COLLECTION
   title: string
