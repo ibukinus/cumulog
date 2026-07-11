@@ -1,0 +1,7 @@
+# セキュリティヘッダー（design/07-security.md）
+# connect-srcはMVPで必要なオリジンのみ許可:
+#   bsky.social=認可サーバー・handle解決 / plc.directory=DIDドキュメント / *.host.bsky.network=ユーザーのPDS
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://bsky.social https://plc.directory https://*.host.bsky.network; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

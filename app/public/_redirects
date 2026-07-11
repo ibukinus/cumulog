@@ -1,0 +1,3 @@
+# SPAフォールバック: 実在する静的ファイル（terms.html等）が優先され、
+# それ以外のパス（/oauth/callback, /logs等）はindex.htmlにフォールバックする
+/* /index.html 200
