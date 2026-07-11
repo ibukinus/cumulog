@@ -95,6 +95,12 @@ export function LogDetail() {
       applyDeleted(entry.uri)
       navigate('/logs', { replace: true, state: { toast: '活動ログを削除しました' } })
     } catch (error) {
+      if (error instanceof RecordClientError && error.kind === 'not-found') {
+        // 対象はすでに存在しない（他クライアントで削除済み等）。再試行しても失敗し続けるため削除済みとして扱う
+        applyDeleted(entry.uri)
+        navigate('/logs', { replace: true, state: { toast: '活動ログはすでに削除されていました' } })
+        return
+      }
       if (error instanceof RecordClientError && error.kind === 'conflict') {
         setDeleteError('削除確認で表示した内容と現在のログが異なるため、削除しませんでした。再読み込み後に、改めて削除を確認してください。')
         await reload()

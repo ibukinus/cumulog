@@ -51,6 +51,7 @@ describe('parseLogRecord', () => {
       '2026-02-30T00:00:00Z', // 実在しない日
       '2026-07-11T24:00:00Z', // 時刻範囲外
       '2026-07-11T12:00:00', // タイムゾーンなし
+      '2026-07-11T12:00:00+99:99', // 不正なタイムゾーンオフセット
     ]) {
       expect(parseLogRecord('uri', 'cid', { ...baseRecord, createdAt }).kind).toBe('unreadable')
     }
