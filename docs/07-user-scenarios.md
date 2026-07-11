@@ -1,12 +1,20 @@
 ---
 type: User Scenarios
 title: 主要ユーザーシナリオ
-description: Cumulogの代表的な利用の流れ。イベント参加ログ、note記事の紐づけ、振り返り、Bluesky共有、削除、保存失敗時など。
+description: Cumulogの代表的な利用の流れ。初回利用、イベント参加ログ、note記事の紐づけ、振り返り、Bluesky共有、削除、保存失敗時など。
 tags: [cumulog, 要件定義, ユーザーシナリオ]
 timestamp: 2026-07-11
 ---
 
 # 主要ユーザーシナリオ
+
+## はじめて利用を開始する
+
+ユーザーはCumulogに初めてアクセスし、Cumulogが公開活動ログサービスであること、活動ログがAT Protocol上の公開データとして保存されることを確認する。
+
+利用規約とプライバシーポリシーを確認したうえで、Bluesky公式PDSを利用するAT Protocolアカウントで利用を開始する。
+
+利用開始後、最初の活動ログを作成する。
 
 ## イベント参加ログを残す
 
