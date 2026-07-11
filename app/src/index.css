@@ -1,10 +1,37 @@
+@import './ui/tokens.css';
+
 :root {
-  color-scheme: light dark;
-  font: 16px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+  font: var(--font-size-body) / var(--line-height-body) var(--font-family-system);
+  color: var(--color-text-body);
+  background: var(--color-bg-page);
 }
 
 body {
   margin: 0;
+  min-width: 320px;
+  background: var(--color-bg-page);
+  color: var(--color-text-body);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+dialog:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
 #root {

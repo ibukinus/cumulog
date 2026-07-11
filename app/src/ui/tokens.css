@@ -1,0 +1,73 @@
+/*
+ * Cumulog semantic design tokens.
+ * Light theme only for MVP. Values are grouped by role so a future theme can
+ * replace the values without changing component styles.
+ * Contrast ratios are calculated with WCAG 2.x relative luminance.
+ */
+:root {
+  /* Surfaces */
+  --color-bg-page: #fcfaf7;
+  --color-bg-card: #ffffff;
+  --color-bg-muted: #f3eee8;
+  --color-bg-accent: #fff1e8;
+
+  /* Content: #292522 on #fcfaf7 = 14.29:1; #655e57 on #fcfaf7 = 5.53:1 */
+  --color-text-body: #292522;
+  --color-text-muted: #655e57;
+  --color-text-on-accent: #ffffff;
+
+  /* Accent: #9a3412 on #ffffff = 6.33:1 */
+  --color-accent: #9a3412;
+  --color-accent-hover: #7c2d12;
+  --color-accent-soft: #fff1e8;
+
+  /* Status colors, deliberately distinct from the warm brand accent. */
+  /* Warning: #854d0e on #fffbeb = 6.18:1 */
+  --color-warning: #854d0e;
+  --color-warning-bg: #fffbeb;
+  /* Error/danger: #b42318 on #fff5f4 = 6.12:1 */
+  --color-error: #b42318;
+  --color-error-bg: #fff5f4;
+  --color-error-hover: #8f1d14;
+  /* Success: #166534 on #f0fdf4 = 7.36:1 */
+  --color-success: #166534;
+  --color-success-bg: #f0fdf4;
+  /* Public-data notice: #075985 on #f0f9ff = 7.82:1 */
+  --color-public: #075985;
+  --color-public-bg: #f0f9ff;
+
+  /* Spoiler: minor #92400e on #fff7ed = 6.64:1; major #991b1b on #fff1f2 = 6.69:1 */
+  --color-spoiler-minor: #92400e;
+  --color-spoiler-minor-bg: #fff7ed;
+  --color-spoiler-major: #991b1b;
+  --color-spoiler-major-bg: #fff1f2;
+
+  /* Borders: #c8beb4 on #ffffff = 1.83:1, used for non-text boundaries only. */
+  --color-border: #c8beb4;
+  --color-border-strong: #8f8175;
+  --color-focus: #0f766e;
+  --color-backdrop: rgb(41 37 34 / 45%);
+
+  /* 4px base unit */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  --font-size-small: 0.875rem;
+  --font-size-body: 1rem;
+  --font-size-heading: 1.375rem;
+  --line-height-body: 1.5;
+  --line-height-heading: 1.3;
+  --font-family-system: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 16px;
+  --shadow-card: 0 2px 12px rgb(61 45 33 / 8%);
+  --shadow-dialog: 0 12px 40px rgb(61 45 33 / 25%);
+}
