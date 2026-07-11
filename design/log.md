@@ -2,6 +2,7 @@
 
 ## 2026-07-11
 
+* **Update**: PR #1 のCodexレビュー指摘（6巡目）に対応。必須項目の値が形式不正なレコード（実在しない日付等）も「読み込めない活動ログ」として扱うことを明記（[02-lexicon.md](02-lexicon.md)）。
 * **Update**: PR #1 のCodexレビュー指摘（5巡目）に対応。(1) タイトルのトリムと非空検証を明記（[02-lexicon.md](02-lexicon.md)）。(2) Bluesky共有時の追加スコープを作成のみの `repo:app.bsky.feed.post?action=create` に限定（[03-auth.md](03-auth.md)）。
 * **Update**: PR #1 のCodexレビュー指摘（4巡目）に対応。権限スコープを `atproto` + `repo:jp.mp0.cumulog.log` のgranularスコープとして確定し、`transition:generic` は要求しないことを明記（[03-auth.md](03-auth.md)）。
 * **Update**: PR #1 のCodexレビュー指摘（3巡目）に対応。(1) レコード必須フィールド `$type`（固定値 `jp.mp0.cumulog.log`）を明記（[02-lexicon.md](02-lexicon.md)）。(2) Bluesky公式PDS判定を `.host.bsky.network` のサフィックス一致に修正（複数ラベルのシャードホストに対応）（[03-auth.md](03-auth.md)）。
