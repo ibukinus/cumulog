@@ -4,6 +4,7 @@ import {
   collectTags,
   effectiveSpoilerLevel,
   filterByCategory,
+  filterByMonth,
   filterBySubject,
   filterByTag,
   parseLogRecord,
@@ -160,5 +161,18 @@ describe('filterBySubject', () => {
     ]
     expect(filterBySubject(entries, '銀河鉄道の夜')).toHaveLength(1)
     expect(filterBySubject(entries, '銀河鉄道の夜')[0].kind).toBe('readable')
+  })
+})
+
+describe('filterByMonth', () => {
+  it('一致する年月だけを返し、他の年月とunreadableを除外する', () => {
+    const entries = [
+      readable({ ...baseRecord, activityDate: '2026-07-01' }),
+      readable({ ...baseRecord, activityDate: '2026-07-31' }),
+      readable({ ...baseRecord, activityDate: '2026-08-01' }),
+      parseLogRecord('unreadable', 'cid', { title: 'x' }),
+    ]
+    expect(filterByMonth(entries, '2026-07')).toHaveLength(2)
+    expect(filterByMonth(entries, '2026-07').every((entry) => entry.kind === 'readable')).toBe(true)
   })
 })

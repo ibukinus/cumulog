@@ -7,7 +7,9 @@
 .row { display: grid; gap: var(--space-2); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-medium); background: var(--color-bg-card); box-shadow: var(--shadow-card); cursor: pointer; }
 .row:hover { border-color: var(--color-border-strong); }
 .row:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
-.date { color: var(--color-sky-text); font-size: var(--font-size-small); font-weight: 600; }
+.date { justify-self: start; min-height: 44px; padding: var(--space-2) 0; border: 0; background: transparent; color: var(--color-sky-text); font: inherit; font-size: var(--font-size-small); font-weight: 600; cursor: pointer; }
+.date:hover { text-decoration: underline; }
+.date:focus-visible { border-radius: var(--radius-small); outline: 3px solid var(--color-focus); outline-offset: 2px; }
 .title { margin: 0; font-size: var(--font-size-body); line-height: var(--line-height-body); }
 .metadata { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0; color: var(--color-text-muted); }
 .metadataItem { min-height: 44px; padding: var(--space-2) 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }

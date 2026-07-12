@@ -106,6 +106,11 @@ export const filterBySubject = (entries: LogEntry[], subject: string): LogEntry[
     (entry) => entry.kind === 'readable' && entry.record.subject === subject,
   )
 
+export const filterByMonth = (entries: LogEntry[], month: string): LogEntry[] =>
+  entries.filter(
+    (entry) => entry.kind === 'readable' && entry.record.activityDate.slice(0, 7) === month,
+  )
+
 export const collectCategories = (entries: LogEntry[]): string[] => {
   const categories = new Set<string>()
   for (const entry of entries) {
