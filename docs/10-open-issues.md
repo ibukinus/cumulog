@@ -3,7 +3,7 @@ type: Open Issues
 title: 今後の検討事項
 description: 要件定義後、基本設計以降で検討・定義する事項の一覧。
 tags: [cumulog, 要件定義, 検討事項, 基本設計]
-timestamp: 2026-07-11
+timestamp: 2026-07-12
 ---
 
 # 今後の検討事項
@@ -57,6 +57,7 @@ timestamp: 2026-07-11
 
 ## 将来機能
 
+* 公開共有ページのOGP（リンクカード）付与。SPAのためHTML配信側（Cloudflare Workers）でのメタタグ付与を検討する
 * カスタムフィードへの拡張方針
 * 月次・年次振り返りの具体的な表示方法
 * 対象名の複数登録

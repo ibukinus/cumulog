@@ -6,6 +6,7 @@ import {
 } from '@atproto/oauth-client-browser'
 
 import { CUMULOG_LOG_COLLECTION } from '../domain/types'
+import { BSKY_POST_COLLECTION } from './share'
 import {
   extractHandle,
   extractPdsServiceEndpoint,
@@ -24,7 +25,7 @@ const productionMetadata: OAuthClientMetadataInput = {
   client_name: 'Cumulog',
   client_uri: PRODUCTION_ORIGIN,
   redirect_uris: [`${PRODUCTION_ORIGIN}/oauth/callback`],
-  scope: `atproto repo:${CUMULOG_LOG_COLLECTION}`,
+  scope: `atproto repo:${CUMULOG_LOG_COLLECTION} repo:${BSKY_POST_COLLECTION}?action=create`,
   grant_types: ['authorization_code', 'refresh_token'],
   response_types: ['code'],
   token_endpoint_auth_method: 'none',

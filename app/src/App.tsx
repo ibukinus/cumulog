@@ -11,6 +11,7 @@ import {
   LogList,
   Settings,
 } from './screens/index'
+import { SharedLog } from './screens/SharedLog'
 
 function LoadingScreen() {
   return <main className="loading" aria-live="polite">読み込み中…</main>
@@ -64,6 +65,16 @@ function AppLayout() {
 }
 
 function AppRoutes() {
+  // 公開共有ページは認証初期化（セッション復元）に依存させず、常に即座に表示する
+  return (
+    <Routes>
+      <Route path="share/:did/:rkey" element={<main className="app-content"><SharedLog /></main>} />
+      <Route path="*" element={<AuthenticatedApp />} />
+    </Routes>
+  )
+}
+
+function AuthenticatedApp() {
   const { status } = useAuth()
   if (status === 'loading') return <LoadingScreen />
 

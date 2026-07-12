@@ -2,6 +2,9 @@
 
 ## 2026-07-12
 
+* **Update**: Bluesky共有の既定文面から外部URLを除外。公開共有ページのURLと外部URLが併記されると分かりにくいというユーザーフィードバックに基づき、既定文面はタイトル・活動日・公開共有ページのURLのみとする（[05-data-flow.md](05-data-flow.md)）。外部URLは公開共有ページ上で参照できる。
+* **Update**: 公開共有ページ（Should・[要件](../docs/05-functional/share-page.md)）の設計を追加。S8として `/share/{did}/{rkey}` の未認証閲覧ページを定義し（[04-screens.md](04-screens.md)）、DID解決＋未認証getRecordによる取得フロー・閲覧時は対応PDS判定を行わない方針を定義（[05-data-flow.md](05-data-flow.md)）。Bluesky共有の既定文面に公開共有ページURLを追加。エラー分類に公開共有ページの取得失敗を追加（[06-error-handling.md](06-error-handling.md)）。
+* **Update**: Bluesky共有（Should）の実装着手に伴い詳細設計を追加。(1) 共有スコープ `repo:app.bsky.feed.post?action=create` を要求スコープに追加し、スコープ追加前の旧セッションは権限不足として再ログインを案内する方針を明記（[03-auth.md](03-auth.md)）。(2) D2 Bluesky共有ダイアログを新設し、共有導線はMVPでは詳細画面のみとする配置を定義（[04-screens.md](04-screens.md)）。(3) 既定文面（タイトル・活動日・外部URL先頭1件。メモ・タグはネタバレ配慮で含めない）、300書記素上限、URLのlink facet付与、レコード構成を定義（[05-data-flow.md](05-data-flow.md)）。(4) エラー分類にBluesky共有失敗を追加（[06-error-handling.md](06-error-handling.md)）。
 * **Update**: 認可取り消しの案内先を具体化。実際の取り消しUIはbsky.appのアプリ設定ではなくPDSのアカウント管理画面（`bsky.social/account`）にあることを実機確認・一次情報で確認し、案内文言の記述を修正（[03-auth.md](03-auth.md)）。
 
 ## 2026-07-11
