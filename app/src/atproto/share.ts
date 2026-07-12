@@ -6,11 +6,16 @@ export const BSKY_POST_COLLECTION = 'app.bsky.feed.post'
 
 // Bluesky投稿の書記素上限（design/05-data-flow.md）
 export const POST_MAX_GRAPHEMES = 300
+export const POST_MAX_BYTES = 3000
 
 const graphemeSegmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
 
 export function countPostGraphemes(text: string): number {
   return Array.from(graphemeSegmenter.segment(text)).length
+}
+
+export function countPostBytes(text: string): number {
+  return textEncoder.encode(text).length
 }
 
 export type LinkFacet = {
@@ -24,11 +29,8 @@ const textEncoder = new TextEncoder()
 export function detectLinkFacets(text: string): LinkFacet[] {
   const facets: LinkFacet[] = []
 
-  for (const match of text.matchAll(/\S+/gu)) {
-    const token = match[0]
-    if (!token.startsWith('http://') && !token.startsWith('https://')) continue
-
-    const uri = token.replace(trailingUrlPunctuation, '')
+  for (const match of text.matchAll(/https?:\/\/[^\s)\]）}】」』〉》]+/gu)) {
+    const uri = match[0].replace(trailingUrlPunctuation, '')
     try {
       new URL(uri)
     } catch {
@@ -56,7 +58,7 @@ export async function createSharePost(
 ): Promise<{ uri: string }> {
   if (
     countPostGraphemes(text) > POST_MAX_GRAPHEMES
-    || textEncoder.encode(text).length > 3_000
+    || countPostBytes(text) > POST_MAX_BYTES
   ) {
     throw new RecordClientError('failed')
   }

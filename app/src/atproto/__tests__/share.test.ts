@@ -4,9 +4,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { RecordClientError } from '../records'
 import {
   BSKY_POST_COLLECTION,
+  countPostBytes,
   countPostGraphemes,
   createSharePost,
   detectLinkFacets,
+  POST_MAX_BYTES,
 } from '../share'
 
 const did = 'did:plc:alice'
@@ -28,6 +30,12 @@ describe('Bluesky share client', () => {
     expect(countPostGraphemes('👨‍👩‍👧‍👦')).toBe(1)
     expect(countPostGraphemes('e\u0301')).toBe(1)
     expect(countPostGraphemes('😀👨‍👩‍👧‍👦e\u0301')).toBe(3)
+  })
+
+  it('counts UTF-8 bytes', () => {
+    expect(countPostBytes('abc')).toBe(3)
+    expect(countPostBytes('日本')).toBe(6)
+    expect(countPostBytes('😀')).toBe(4)
   })
 
   it('detects multiple links with UTF-8 byte offsets and excludes punctuation', () => {
@@ -53,6 +61,30 @@ describe('Bluesky share client', () => {
 
   it('returns no facets when text contains no URL', () => {
     expect(detectLinkFacets('今日は散歩しました')).toEqual([])
+  })
+
+  it('detects a URL following an opening parenthesis', () => {
+    expect(detectLinkFacets('参照(https://example.com)を見た')).toEqual([
+      {
+        index: { byteStart: 7, byteEnd: 26 },
+        features: [{
+          $type: 'app.bsky.richtext.facet#link',
+          uri: 'https://example.com',
+        }],
+      },
+    ])
+  })
+
+  it('detects a URL following an opening quotation mark', () => {
+    expect(detectLinkFacets('「https://example.com」')).toEqual([
+      {
+        index: { byteStart: 3, byteEnd: 22 },
+        features: [{
+          $type: 'app.bsky.richtext.facet#link',
+          uri: 'https://example.com',
+        }],
+      },
+    ])
   })
 
   it('creates a post without a facets key when text has no URL', async () => {
@@ -96,7 +128,7 @@ describe('Bluesky share client', () => {
 
   it.each([
     ['301 graphemes', 'a'.repeat(301)],
-    ['more than 3000 bytes', '界'.repeat(1001)],
+    ['more than 3000 bytes', 'a'.repeat(POST_MAX_BYTES + 1)],
   ])('rejects %s before creating a record', async (_case, text) => {
     const createRecord = vi.fn()
     await expect(createSharePost(agentWith(createRecord), did, text)).rejects.toEqual(expectKind('failed'))
