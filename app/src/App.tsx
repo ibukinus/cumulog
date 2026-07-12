@@ -65,13 +65,22 @@ function AppLayout() {
 }
 
 function AppRoutes() {
+  // 公開共有ページは認証初期化（セッション復元）に依存させず、常に即座に表示する
+  return (
+    <Routes>
+      <Route path="share/:did/:rkey" element={<main className="app-content"><SharedLog /></main>} />
+      <Route path="*" element={<AuthenticatedApp />} />
+    </Routes>
+  )
+}
+
+function AuthenticatedApp() {
   const { status } = useAuth()
   if (status === 'loading') return <LoadingScreen />
 
   return (
     <LogsProvider>
       <Routes>
-        <Route path="share/:did/:rkey" element={<main className="app-content"><SharedLog /></main>} />
         <Route element={<AppLayout />}>
           <Route index element={<LandingRoute />} />
           <Route path="login" element={<Login />} />
