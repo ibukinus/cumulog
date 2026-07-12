@@ -96,6 +96,16 @@ export const filterByTag = (entries: LogEntry[], tag: string): LogEntry[] =>
     (entry) => entry.kind === 'readable' && entry.record.tags?.includes(tag) === true,
   )
 
+export const filterByCategory = (entries: LogEntry[], category: string): LogEntry[] =>
+  entries.filter(
+    (entry) => entry.kind === 'readable' && entry.record.category === category,
+  )
+
+export const filterBySubject = (entries: LogEntry[], subject: string): LogEntry[] =>
+  entries.filter(
+    (entry) => entry.kind === 'readable' && entry.record.subject === subject,
+  )
+
 export const collectCategories = (entries: LogEntry[]): string[] => {
   const categories = new Set<string>()
   for (const entry of entries) {
