@@ -3,6 +3,8 @@ import {
   collectCategories,
   collectTags,
   effectiveSpoilerLevel,
+  filterByCategory,
+  filterBySubject,
   filterByTag,
   parseLogRecord,
   sortLogEntries,
@@ -132,5 +134,31 @@ describe('filterByTag and collectors', () => {
     ]
     expect(collectCategories(entries)).toEqual(['映画', '読書'])
     expect(collectTags(entries)).toEqual(['a', 'b', 'c'])
+  })
+})
+
+describe('filterByCategory', () => {
+  it('完全一致する活動種別だけを返し、未設定とunreadableを除外する', () => {
+    const entries = [
+      readable({ ...baseRecord, category: '読書' }),
+      readable({ ...baseRecord, category: '読書会' }),
+      readable({ ...baseRecord, category: undefined }),
+      parseLogRecord('unreadable', 'cid', { title: 'x' }),
+    ]
+    expect(filterByCategory(entries, '読書')).toHaveLength(1)
+    expect(filterByCategory(entries, '読書')[0].kind).toBe('readable')
+  })
+})
+
+describe('filterBySubject', () => {
+  it('完全一致する対象名だけを返し、未設定とunreadableを除外する', () => {
+    const entries = [
+      readable({ ...baseRecord, subject: '銀河鉄道の夜' }),
+      readable({ ...baseRecord, subject: '銀河鉄道の夜（朗読）' }),
+      readable({ ...baseRecord, subject: undefined }),
+      parseLogRecord('unreadable', 'cid', { title: 'x' }),
+    ]
+    expect(filterBySubject(entries, '銀河鉄道の夜')).toHaveLength(1)
+    expect(filterBySubject(entries, '銀河鉄道の夜')[0].kind).toBe('readable')
   })
 })

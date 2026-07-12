@@ -4,6 +4,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLogs } from '../app/index'
 import {
   effectiveSpoilerLevel,
+  filterByCategory,
+  filterBySubject,
   filterByTag,
   rkeyFromAtUri,
   type LogEntry,
@@ -12,7 +14,17 @@ import { ExternalLinkIcon } from '../ui/icons'
 import { Button, EmptyState, ErrorState, SpoilerBadge } from '../ui/index'
 import styles from './LogList.module.css'
 
-function LogRow({ entry, onSelectTag }: { entry: LogEntry; onSelectTag: (tag: string) => void }) {
+function LogRow({
+  entry,
+  onSelectTag,
+  onSelectCategory,
+  onSelectSubject,
+}: {
+  entry: LogEntry
+  onSelectTag: (tag: string) => void
+  onSelectCategory: (category: string) => void
+  onSelectSubject: (subject: string) => void
+}) {
   const navigate = useNavigate()
   const rkey = rkeyFromAtUri(entry.uri)
 
@@ -29,6 +41,14 @@ function LogRow({ entry, onSelectTag }: { entry: LogEntry; onSelectTag: (tag: st
   const handleTagClick = (event: MouseEvent<HTMLButtonElement>, tag: string) => {
     event.stopPropagation()
     onSelectTag(tag)
+  }
+  const handleCategoryClick = (event: MouseEvent<HTMLButtonElement>, category: string) => {
+    event.stopPropagation()
+    onSelectCategory(category)
+  }
+  const handleSubjectClick = (event: MouseEvent<HTMLButtonElement>, subject: string) => {
+    event.stopPropagation()
+    onSelectSubject(subject)
   }
 
   if (entry.kind === 'unreadable') {
@@ -64,8 +84,26 @@ function LogRow({ entry, onSelectTag }: { entry: LogEntry; onSelectTag: (tag: st
         <h2 className={styles.title}>{record.title}</h2>
         {(record.category || record.subject) && (
           <p className={styles.metadata}>
-            {record.category && <span>{record.category}</span>}
-            {record.subject && <span>{record.subject}</span>}
+            {record.category && (
+              <button
+                className={styles.metadataItem}
+                type="button"
+                aria-label={`活動種別「${record.category}」で絞り込み`}
+                onClick={(event) => handleCategoryClick(event, record.category!)}
+              >
+                {record.category}
+              </button>
+            )}
+            {record.subject && (
+              <button
+                className={styles.metadataItem}
+                type="button"
+                aria-label={`対象名「${record.subject}」で絞り込み`}
+                onClick={(event) => handleSubjectClick(event, record.subject!)}
+              >
+                {record.subject}
+              </button>
+            )}
           </p>
         )}
         <div className={styles.labels}>
@@ -96,11 +134,28 @@ export function LogList() {
   const { status, entries, reload } = useLogs()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const selectedTag = searchParams.get('tag') || null
-  const visibleEntries = selectedTag === null ? entries : filterByTag(entries, selectedTag)
+  const tag = searchParams.get('tag')
+  const category = searchParams.get('category')
+  const subject = searchParams.get('subject')
+  const selectedFilter = tag
+    ? { kind: 'tag' as const, value: tag }
+    : category
+      ? { kind: 'category' as const, value: category }
+      : subject
+        ? { kind: 'subject' as const, value: subject }
+        : null
+  const visibleEntries = selectedFilter === null
+    ? entries
+    : selectedFilter.kind === 'tag'
+      ? filterByTag(entries, selectedFilter.value)
+      : selectedFilter.kind === 'category'
+        ? filterByCategory(entries, selectedFilter.value)
+        : filterBySubject(entries, selectedFilter.value)
 
   const selectTag = (tag: string) => setSearchParams({ tag })
-  const clearTag = () => setSearchParams({})
+  const selectCategory = (category: string) => setSearchParams({ category })
+  const selectSubject = (subject: string) => setSearchParams({ subject })
+  const clearFilter = () => setSearchParams({})
   const createButton = (
     <Button type="button" onClick={() => navigate('/logs/new')}>活動ログを作成</Button>
   )
@@ -127,7 +182,7 @@ export function LogList() {
   } else if (visibleEntries.length === 0) {
     content = (
       <EmptyState
-        title="このタグの活動ログはありません"
+        title="この条件に一致する活動ログはありません"
         description="絞り込みを解除すると、すべての活動ログを表示できます。"
       />
     )
@@ -135,7 +190,13 @@ export function LogList() {
     content = (
       <ol className={styles.list} aria-label="活動ログ">
         {visibleEntries.map((entry) => (
-          <LogRow key={entry.uri} entry={entry} onSelectTag={selectTag} />
+          <LogRow
+            key={entry.uri}
+            entry={entry}
+            onSelectTag={selectTag}
+            onSelectCategory={selectCategory}
+            onSelectSubject={selectSubject}
+          />
         ))}
       </ol>
     )
@@ -147,10 +208,16 @@ export function LogList() {
         <h1>活動ログ</h1>
         {createButton}
       </header>
-      {selectedTag !== null && status === 'loaded' && (
-        <div className={styles.filter} aria-label="タグ絞り込み">
-          <span>「#{selectedTag}」で絞り込み中</span>
-          <Button type="button" variant="secondary" onClick={clearTag}>絞り込みを解除</Button>
+      {selectedFilter !== null && status === 'loaded' && (
+        <div className={styles.filter} aria-label="絞り込み">
+          <span>
+            {selectedFilter.kind === 'tag'
+              ? `「#${selectedFilter.value}」で絞り込み中`
+              : selectedFilter.kind === 'category'
+                ? `活動種別「${selectedFilter.value}」で絞り込み中`
+                : `対象名「${selectedFilter.value}」で絞り込み中`}
+          </span>
+          <Button type="button" variant="secondary" onClick={clearFilter}>絞り込みを解除</Button>
         </div>
       )}
       {content}
