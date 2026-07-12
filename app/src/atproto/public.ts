@@ -15,6 +15,10 @@ import {
 // 未認証での公開レコード取得（design/05-data-flow.md「公開共有ページの取得」）。
 // 失敗時は records.ts の RecordClientError（'not-found' | 'failed'）を throw する
 
+// DID解決の内部fetchにもタイムアウトを効かせ、応答がない場合に読み込み中のまま固まらないようにする
+const withTimeout = (fetcher: typeof fetch): typeof fetch =>
+  (input, init) => fetcher(input, { ...init, signal: timeoutSignal() })
+
 export async function fetchPublicLog(
   did: string,
   rkey: string,
@@ -23,7 +27,7 @@ export async function fetchPublicLog(
   try {
     let document
     try {
-      document = await resolveDidDocument(did, fetcher)
+      document = await resolveDidDocument(did, withTimeout(fetcher))
     } catch (cause) {
       if (cause instanceof IdentityResolutionError && cause.status === 404) {
         throw new RecordClientError('not-found', cause)
@@ -73,7 +77,7 @@ export async function resolveOwnerHandle(
   fetcher: typeof fetch = fetch,
 ): Promise<string | null> {
   try {
-    return extractHandle(await resolveDidDocument(did, fetcher))
+    return extractHandle(await resolveDidDocument(did, withTimeout(fetcher)))
   } catch {
     return null
   }

@@ -41,6 +41,15 @@ describe('public record client', () => {
     expect(options).toEqual({ signal: expect.any(AbortSignal) })
   })
 
+  it('applies the read timeout signal to DID resolution', async () => {
+    const fetcher = fetcherWithRecord({ uri: 'at://alice/log/key', cid: 'cid-key', value })
+    await fetchPublicLog(did, 'key', fetcher)
+    const [, didResolutionOptions] = fetcher.mock.calls[0]
+    expect(didResolutionOptions).toEqual(
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    )
+  })
+
   it('classifies RecordNotFound as not-found', async () => {
     const fetcher = fetcherWithRecord({ error: 'RecordNotFound' }, 400)
     await expect(fetchPublicLog(did, 'missing', fetcher)).rejects.toEqual(
