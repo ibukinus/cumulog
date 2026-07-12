@@ -3,8 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 
 import { fetchPublicLog, resolveOwnerHandle } from '../atproto/public'
 import { RecordClientError } from '../atproto/records'
-import { effectiveSpoilerLevel, type LogEntry } from '../domain/index'
-import { EmptyState, ErrorState, Notice, SpoilerBadge } from '../ui/index'
+import type { LogEntry } from '../domain/index'
+import { EmptyState, ErrorState, Notice, RecordArticle } from '../ui/index'
 import styles from './SharedLog.module.css'
 
 type PageState =
@@ -12,19 +12,6 @@ type PageState =
   | { kind: 'display'; entry: LogEntry }
   | { kind: 'not-found' }
   | { kind: 'failed' }
-
-function isHttpUrl(value: string): boolean {
-  try {
-    const protocol = new URL(value).protocol
-    return protocol === 'http:' || protocol === 'https:'
-  } catch {
-    return false
-  }
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div className={styles.field}><dt>{label}</dt><dd>{children}</dd></div>
-}
 
 function LandingLink() {
   return <Link className={styles.action} to="/">Cumulogについて</Link>
@@ -95,23 +82,11 @@ export function SharedLog() {
   }
 
   const { record } = state.entry
-  const spoilerLevel = effectiveSpoilerLevel(record)
   return <article className={styles.page}>
-    <header className={styles.header}>
-      <div><p className={styles.owner}>記録した人：{owner}</p><h1>{record.title}</h1></div>
-      <SpoilerBadge level={spoilerLevel} />
-    </header>
+    <RecordArticle record={record}>
+      <p className={styles.owner}>記録した人：{owner}</p>
+    </RecordArticle>
     <Notice variant="public">この活動ログはAT Protocol上の公開データです。</Notice>
-    <dl className={styles.details}>
-      <Field label="活動日">{record.activityDate}</Field>
-      <Field label="タイトル">{record.title}</Field>
-      <Field label="活動種別">{record.category ?? 'なし'}</Field>
-      <Field label="対象名">{record.subject ?? 'なし'}</Field>
-      <Field label="タグ">{record.tags?.length ? record.tags.join('、') : 'なし'}</Field>
-      <Field label="メモ"><span className={styles.preformatted}>{record.note ?? 'なし'}</span></Field>
-      <Field label="外部URL">{record.urls?.length ? <ul className={styles.urlList}>{record.urls.map((url) => <li key={url}>{isHttpUrl(url) ? <a href={url} target="_blank" rel="noopener noreferrer">{url}</a> : <span>{url}</span>}</li>)}</ul> : 'なし'}</Field>
-      <Field label="ネタバレ"><SpoilerBadge level={spoilerLevel} />{spoilerLevel === 'none' && 'ネタバレなし'}</Field>
-    </dl>
     <aside className={styles.about} aria-labelledby="about-cumulog">
       <h2 id="about-cumulog">Cumulogについて</h2>
       <p>Cumulogは、日々の活動をAT Protocol上に記録する公開活動ログサービスです。</p>

@@ -8,26 +8,9 @@ import {
   rkeyFromAtUri,
   type LogEntry,
 } from '../domain/index'
+import { ExternalLinkIcon } from '../ui/icons'
 import { Button, EmptyState, ErrorState, SpoilerBadge } from '../ui/index'
 import styles from './LogList.module.css'
-
-function ExternalLinkIcon() {
-  return (
-    <svg
-      className={styles.icon}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M15 4h5v5M20 4l-9 9" />
-      <path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6" />
-    </svg>
-  )
-}
 
 function LogRow({ entry, onSelectTag }: { entry: LogEntry; onSelectTag: (tag: string) => void }) {
   const navigate = useNavigate()
@@ -98,7 +81,7 @@ function LogRow({ entry, onSelectTag }: { entry: LogEntry; onSelectTag: (tag: st
           ))}
           {record.urls && record.urls.length > 0 && (
             <span className={styles.urlIndicator} aria-label="外部URLあり" title="外部URLあり">
-              <ExternalLinkIcon />
+              <ExternalLinkIcon className={styles.icon} />
               <span>外部URLあり</span>
             </span>
           )}

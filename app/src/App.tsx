@@ -1,6 +1,7 @@
 import { BrowserRouter, Link, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 
 import { AuthProvider, LogsProvider, useAuth } from './app/index'
+import { CloudIcon } from './ui/icons'
 import { Toast } from './ui/index'
 import {
   Landing,
@@ -39,7 +40,10 @@ function AppLayout() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <Link className="service-name" to={session === null ? '/' : '/logs'}>Cumulog</Link>
+        <Link className="service-name" to={session === null ? '/' : '/logs'}>
+          <CloudIcon className="service-mark" />
+          Cumulog
+        </Link>
         {session !== null && (
           <nav aria-label="アカウント">
             <span>{session.handle ?? session.did}</span>

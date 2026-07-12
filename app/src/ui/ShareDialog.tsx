@@ -79,7 +79,7 @@ export function ShareDialog({ open, defaultText, submitting, error, onSubmit, on
       {error && <div id={errorId} className={styles.error} role="alert">{error}</div>}
       <div className={styles.actions}>
         <Button type="button" variant="secondary" onClick={onCancel} disabled={submitting}>取り消す</Button>
-        <Button type="button" onClick={() => onSubmit(text)} disabled={disabled}>{submitting ? '投稿中…' : '投稿する'}</Button>
+        <Button type="button" variant="bluesky" onClick={() => onSubmit(text)} disabled={disabled}>{submitting ? '投稿中…' : '投稿する'}</Button>
       </div>
     </div>
   </dialog>
