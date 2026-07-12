@@ -36,6 +36,22 @@
   --color-public: #075985;
   --color-public-bg: #f0f9ff;
 
+  /* Dusk sky: Cumulog（cumulus＝積雲）由来の脇役カラー。用途は時間表示（活動日）と
+     淡い空色の面に限定し、警告・エラー・公開通知とは役割を混ぜない。 */
+  /* #46627f on #fcfaf7 = 6.08:1; on #ffffff = 6.34:1 */
+  --color-sky-text: #46627f;
+  --color-sky-bg: #eef3f8;
+
+  /* Bluesky共有導線の専用色（Blueskyへ向かう操作にだけ使う）。white on #0070d6 = 4.90:1 */
+  --color-bluesky: #0070d6;
+  --color-bluesky-hover: #005fb8;
+
+  /* Tag chips: neutral warm so they never compete with warning/spoiler colors. */
+  /* #6b543b on #f0e9df = 5.89:1 */
+  --color-tag-text: #6b543b;
+  --color-tag-bg: #f0e9df;
+  --color-tag-bg-hover: #e7ddcf;
+
   /* Spoiler: minor #92400e on #fff7ed = 6.64:1; major #991b1b on #fff1f2 = 6.69:1 */
   --color-spoiler-minor: #92400e;
   --color-spoiler-minor-bg: #fff7ed;
@@ -45,7 +61,7 @@
   /* Borders: #c8beb4 on #ffffff = 1.83:1, used for non-text boundaries only. */
   --color-border: #c8beb4;
   --color-border-strong: #8f8175;
-  --color-focus: #0f766e;
+  --color-focus: #2e5f8a;
   --color-backdrop: rgb(41 37 34 / 45%);
 
   /* 4px base unit */

@@ -5,31 +5,18 @@ import { useAuth, useLogs } from '../app/index'
 import { getAgent } from '../atproto/oauth'
 import { deleteLog, RecordClientError } from '../atproto/records'
 import { createSharePost } from '../atproto/share'
-import { buildDefaultShareText, effectiveSpoilerLevel, rkeyFromAtUri, type LogEntry } from '../domain/index'
+import { buildDefaultShareText, rkeyFromAtUri, type LogEntry } from '../domain/index'
 import {
   Button,
   ConfirmDialog,
   EmptyState,
   ErrorState,
   Notice,
+  RecordArticle,
   ShareDialog,
-  SpoilerBadge,
   Toast,
 } from '../ui/index'
 import styles from './LogDetail.module.css'
-
-function isHttpUrl(value: string): boolean {
-  try {
-    const protocol = new URL(value).protocol
-    return protocol === 'http:' || protocol === 'https:'
-  } catch {
-    return false
-  }
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div className={styles.field}><dt>{label}</dt><dd>{children}</dd></div>
-}
 
 function DeleteDescription({ entry }: { entry: LogEntry }) {
   if (entry.kind === 'unreadable') {
@@ -159,21 +146,11 @@ export function LogDetail() {
       <header className={styles.header}><h1>読み込めない活動ログ</h1></header>
       <Notice variant="warning">この活動ログは内容を解釈できないため表示できません。</Notice>
       <p className={styles.identifier}>at-uri：{entry.uri}</p>
-      <div className={styles.actions}><Button type="button" variant="danger" onClick={openDeleteDialog} disabled={deleting}>削除</Button></div>
+      <div className={styles.actions}><Button type="button" variant="dangerQuiet" onClick={openDeleteDialog} disabled={deleting}>削除</Button></div>
     </> : <>
-      <header className={styles.header}><h1>{entry.record.title}</h1><SpoilerBadge level={effectiveSpoilerLevel(entry.record)} /></header>
-      <Notice variant="public">AT Protocol上の公開レコードとして保存されています。<span className={styles.identifier}>at-uri：{entry.uri}</span></Notice>
-      <dl className={styles.details}>
-        <Field label="活動日">{entry.record.activityDate}</Field>
-        <Field label="タイトル">{entry.record.title}</Field>
-        <Field label="活動種別">{entry.record.category ?? 'なし'}</Field>
-        <Field label="対象名">{entry.record.subject ?? 'なし'}</Field>
-        <Field label="タグ">{entry.record.tags?.length ? entry.record.tags.join('、') : 'なし'}</Field>
-        <Field label="メモ"><span className={styles.preformatted}>{entry.record.note ?? 'なし'}</span></Field>
-        <Field label="外部URL">{entry.record.urls?.length ? <ul className={styles.urlList}>{entry.record.urls.map((url) => <li key={url}>{isHttpUrl(url) ? <a href={url} target="_blank" rel="noopener noreferrer">{url}</a> : <span>{url}</span>}</li>)}</ul> : 'なし'}</Field>
-        <Field label="ネタバレ"><SpoilerBadge level={effectiveSpoilerLevel(entry.record)} />{effectiveSpoilerLevel(entry.record) === 'none' && 'ネタバレなし'}</Field>
-      </dl>
-      <div className={styles.actions}><Link className={styles.action} to={`/logs/${rkey}/edit`}>編集</Link><Button type="button" onClick={openShareDialog} disabled={deleting || sharing}>Blueskyで共有</Button><Button type="button" variant="danger" onClick={openDeleteDialog} disabled={deleting || sharing}>削除</Button></div>
+      <RecordArticle record={entry.record} />
+      <Notice variant="public">AT Protocol上の公開レコードとして保存されています。<span className={`${styles.identifier} ${styles.noticeUri}`}>at-uri：{entry.uri}</span></Notice>
+      <div className={styles.actions}><Link className={styles.action} to={`/logs/${rkey}/edit`}>編集</Link><Button type="button" variant="bluesky" onClick={openShareDialog} disabled={deleting || sharing}>Blueskyで共有</Button><Button type="button" variant="dangerQuiet" onClick={openDeleteDialog} disabled={deleting || sharing}>削除</Button></div>
     </>}
     {entry.kind === 'readable' && session !== null && rkey !== undefined && <ShareDialog open={shareDialogOpen} defaultText={buildDefaultShareText(entry.record, `${window.location.origin}/share/${session.did}/${rkey}`)} submitting={sharing} error={shareError === null ? undefined : <ShareError kind={shareError.kind} />} onSubmit={(text) => void handleShare(text)} onCancel={() => setShareDialogOpen(false)} />}
     <ConfirmDialog open={dialogOpen} title="活動ログを削除しますか？" description={<DeleteDescription entry={entry} />} confirmLabel="削除する" cancelLabel="取り消す" confirmVariant="danger" onConfirm={() => void handleDelete()} onCancel={() => setDialogOpen(false)} />

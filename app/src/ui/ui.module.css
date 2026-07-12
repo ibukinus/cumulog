@@ -6,9 +6,13 @@
 .secondary:hover:not(:disabled) { background: var(--color-bg-muted); }
 .danger { background: var(--color-error); color: var(--color-text-on-accent); }
 .danger:hover:not(:disabled) { background: var(--color-error-hover); }
+.dangerQuiet { border-color: var(--color-error); background: var(--color-bg-card); color: var(--color-error); }
+.dangerQuiet:hover:not(:disabled) { background: var(--color-error-bg); }
+.bluesky { background: var(--color-bluesky); color: var(--color-text-on-accent); }
+.bluesky:hover:not(:disabled) { background: var(--color-bluesky-hover); }
 .field { display: grid; gap: var(--space-2); margin-block: var(--space-4); }
 .label { font-weight: 650; }
-.required { color: var(--color-error); margin-inline-start: var(--space-1); }
+.required { display: inline-block; margin-inline-start: var(--space-2); padding: 0 var(--space-2); border-radius: 999px; background: var(--color-bg-muted); color: var(--color-text-muted); font-size: var(--font-size-small); font-weight: 650; }
 .control { width: 100%; min-height: 44px; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border-strong); border-radius: var(--radius-small); background: var(--color-bg-card); color: var(--color-text-body); }
 textarea.control { min-height: 120px; resize: vertical; }
 .invalid { border-color: var(--color-error); }
@@ -20,7 +24,7 @@ textarea.control { min-height: 120px; resize: vertical; }
 .dialogTitle { margin: 0 0 var(--space-3); font-size: var(--font-size-heading); line-height: var(--line-height-heading); }
 .dialogActions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
 .toast { position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: 10; display: flex; align-items: center; gap: var(--space-2); max-width: min(28rem, calc(100% - var(--space-8))); padding: var(--space-3) var(--space-4); border: 1px solid var(--color-success); border-radius: var(--radius-small); background: var(--color-success-bg); color: var(--color-success); box-shadow: var(--shadow-card); }
-.badge { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 28px; padding: var(--space-1) var(--space-2); border-radius: 999px; font-size: var(--font-size-small); font-weight: 650; }
+.badge { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 28px; padding: var(--space-1) var(--space-2); border-radius: 999px; font-size: var(--font-size-small); font-weight: 650; white-space: nowrap; }
 .minor { background: var(--color-spoiler-minor-bg); color: var(--color-spoiler-minor); }
 .major { background: var(--color-spoiler-major-bg); color: var(--color-spoiler-major); }
 .notice { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-4); border: 1px solid currentColor; border-radius: var(--radius-small); }
@@ -29,6 +33,8 @@ textarea.control { min-height: 120px; resize: vertical; }
 .error { background: var(--color-error-bg); color: var(--color-error); }
 .public { background: var(--color-public-bg); color: var(--color-public); }
 .noticeText { min-width: 0; }
+.noticeText > :first-child { margin-top: 0; }
+.noticeText > :last-child { margin-bottom: 0; }
 .empty, .errorState { display: grid; justify-items: center; gap: var(--space-3); padding: var(--space-10) var(--space-6); text-align: center; }
 .emptyTitle, .errorTitle { margin: 0; font-size: var(--font-size-heading); line-height: var(--line-height-heading); }
 .emptyText, .errorTextBlock { margin: 0; color: var(--color-text-muted); }

@@ -11,3 +11,5 @@ export function LockIcon(props: IconProps) { return <svg {...base} {...props}><r
 export function SearchIcon(props: IconProps) { return <svg {...base} {...props}><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg> }
 export function RefreshIcon(props: IconProps) { return <svg {...base} {...props}><path d="M20 11a8 8 0 0 0-14.7-4L3 10" /><path d="M3 5v5h5M4 13a8 8 0 0 0 14.7 4L21 14" /><path d="M21 19v-5h-5" /></svg> }
 export function XIcon(props: IconProps) { return <svg {...base} {...props}><path d="m6 6 12 12M18 6 6 18" /></svg> }
+export function CloudIcon(props: IconProps) { return <svg {...base} {...props}><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></svg> }
+export function ExternalLinkIcon(props: IconProps) { return <svg {...base} {...props}><path d="M15 4h5v5M20 4l-9 9" /><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6" /></svg> }
