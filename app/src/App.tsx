@@ -51,7 +51,8 @@ function AppLayout() {
           認証が切れました。再ログインが必要です。 <Link to="/login">再ログイン</Link>
         </div>
       )}
-      {initializationError !== null && session === null && (
+      {/* 失効通知と同時に出ると同義のバナーが2枚並ぶため、失効通知を優先する */}
+      {initializationError !== null && session === null && invalidation === null && (
         <div className="auth-banner" role="alert">
           ログイン処理を完了できませんでした。もう一度お試しください。 <Link to="/login">ログインへ</Link>
         </div>
