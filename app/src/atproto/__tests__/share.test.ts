@@ -75,6 +75,19 @@ describe('Bluesky share client', () => {
     ])
   })
 
+  it('keeps balanced parentheses inside a URL', () => {
+    const url = 'https://en.wikipedia.org/wiki/Function_(mathematics)'
+    expect(detectLinkFacets(`参考: ${url} を読んだ`)).toEqual([
+      {
+        index: { byteStart: 8, byteEnd: 8 + url.length },
+        features: [{
+          $type: 'app.bsky.richtext.facet#link',
+          uri: url,
+        }],
+      },
+    ])
+  })
+
   it('detects a URL following an opening quotation mark', () => {
     expect(detectLinkFacets('「https://example.com」')).toEqual([
       {

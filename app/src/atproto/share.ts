@@ -23,14 +23,46 @@ export type LinkFacet = {
   features: [{ $type: 'app.bsky.richtext.facet#link'; uri: string }]
 }
 
-const trailingUrlPunctuation = /[。、．，,.)\]）}】」』〉》!?！？]+$/u
 const textEncoder = new TextEncoder()
+
+const closerToOpener: Record<string, string> = {
+  ')': '(',
+  ']': '[',
+  '）': '（',
+  '}': '{',
+  '】': '【',
+  '」': '「',
+  '』': '『',
+  '〉': '〈',
+  '》': '《',
+}
+const openers = new Set(Object.values(closerToOpener))
+
+// URL内に対応する開き括弧が無い閉じ括弧は、文側の括弧（例:「参照(URL)を見た」）を
+// 巻き込んだものとみなし、その位置でURLを打ち切る。URL自身の対応括弧
+// （例: Wikipediaの「_(mathematics)」）は保持する
+function truncateAtUnmatchedCloser(candidate: string): string {
+  const depths = new Map<string, number>()
+  for (let i = 0; i < candidate.length; i++) {
+    const char = candidate[i]
+    if (openers.has(char)) depths.set(char, (depths.get(char) ?? 0) + 1)
+    const opener = closerToOpener[char]
+    if (opener !== undefined) {
+      const depth = depths.get(opener) ?? 0
+      if (depth === 0) return candidate.slice(0, i)
+      depths.set(opener, depth - 1)
+    }
+  }
+  return candidate
+}
+
+const trailingUrlPunctuation = /[。、．，,.!?！？;:；：'"]+$/u
 
 export function detectLinkFacets(text: string): LinkFacet[] {
   const facets: LinkFacet[] = []
 
-  for (const match of text.matchAll(/https?:\/\/[^\s)\]）}】」』〉》]+/gu)) {
-    const uri = match[0].replace(trailingUrlPunctuation, '')
+  for (const match of text.matchAll(/https?:\/\/\S+/gu)) {
+    const uri = truncateAtUnmatchedCloser(match[0]).replace(trailingUrlPunctuation, '')
     try {
       new URL(uri)
     } catch {
