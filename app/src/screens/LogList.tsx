@@ -5,8 +5,10 @@ import { useLogs } from '../app/index'
 import {
   effectiveSpoilerLevel,
   filterByCategory,
+  filterByMonth,
   filterBySubject,
   filterByTag,
+  formatYearMonthLabel,
   rkeyFromAtUri,
   type LogEntry,
 } from '../domain/index'
@@ -19,11 +21,13 @@ function LogRow({
   onSelectTag,
   onSelectCategory,
   onSelectSubject,
+  onSelectMonth,
 }: {
   entry: LogEntry
   onSelectTag: (tag: string) => void
   onSelectCategory: (category: string) => void
   onSelectSubject: (subject: string) => void
+  onSelectMonth: (month: string) => void
 }) {
   const navigate = useNavigate()
   const rkey = rkeyFromAtUri(entry.uri)
@@ -49,6 +53,10 @@ function LogRow({
   const handleSubjectClick = (event: MouseEvent<HTMLButtonElement>, subject: string) => {
     event.stopPropagation()
     onSelectSubject(subject)
+  }
+  const handleMonthClick = (event: MouseEvent<HTMLButtonElement>, month: string) => {
+    event.stopPropagation()
+    onSelectMonth(month)
   }
 
   if (entry.kind === 'unreadable') {
@@ -80,7 +88,14 @@ function LogRow({
         onClick={openDetail}
         onKeyDown={handleKeyDown}
       >
-        <time className={styles.date} dateTime={record.activityDate}>{record.activityDate}</time>
+        <button
+          className={styles.date}
+          type="button"
+          aria-label={`「${formatYearMonthLabel(record.activityDate.slice(0, 7))}」で絞り込み`}
+          onClick={(event) => handleMonthClick(event, record.activityDate.slice(0, 7))}
+        >
+          <time dateTime={record.activityDate}>{record.activityDate}</time>
+        </button>
         <h2 className={styles.title}>{record.title}</h2>
         {(record.category || record.subject) && (
           <p className={styles.metadata}>
@@ -137,24 +152,30 @@ export function LogList() {
   const tag = searchParams.get('tag')
   const category = searchParams.get('category')
   const subject = searchParams.get('subject')
+  const month = searchParams.get('month')
   const selectedFilter = tag
     ? { kind: 'tag' as const, value: tag }
     : category
       ? { kind: 'category' as const, value: category }
       : subject
         ? { kind: 'subject' as const, value: subject }
-        : null
+        : month
+          ? { kind: 'month' as const, value: month }
+          : null
   const visibleEntries = selectedFilter === null
     ? entries
     : selectedFilter.kind === 'tag'
       ? filterByTag(entries, selectedFilter.value)
       : selectedFilter.kind === 'category'
         ? filterByCategory(entries, selectedFilter.value)
-        : filterBySubject(entries, selectedFilter.value)
+        : selectedFilter.kind === 'subject'
+          ? filterBySubject(entries, selectedFilter.value)
+          : filterByMonth(entries, selectedFilter.value)
 
   const selectTag = (tag: string) => setSearchParams({ tag })
   const selectCategory = (category: string) => setSearchParams({ category })
   const selectSubject = (subject: string) => setSearchParams({ subject })
+  const selectMonth = (month: string) => setSearchParams({ month })
   const clearFilter = () => setSearchParams({})
   const createButton = (
     <Button type="button" onClick={() => navigate('/logs/new')}>活動ログを作成</Button>
@@ -196,6 +217,7 @@ export function LogList() {
             onSelectTag={selectTag}
             onSelectCategory={selectCategory}
             onSelectSubject={selectSubject}
+            onSelectMonth={selectMonth}
           />
         ))}
       </ol>
@@ -215,7 +237,9 @@ export function LogList() {
               ? `「#${selectedFilter.value}」で絞り込み中`
               : selectedFilter.kind === 'category'
                 ? `活動種別「${selectedFilter.value}」で絞り込み中`
-                : `対象名「${selectedFilter.value}」で絞り込み中`}
+                : selectedFilter.kind === 'subject'
+                  ? `対象名「${selectedFilter.value}」で絞り込み中`
+                  : `「${formatYearMonthLabel(selectedFilter.value)}」で絞り込み中`}
           </span>
           <Button type="button" variant="secondary" onClick={clearFilter}>絞り込みを解除</Button>
         </div>

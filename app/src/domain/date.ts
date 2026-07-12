@@ -15,3 +15,9 @@ export function isValidActivityDate(value: string): boolean {
   const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
   return day <= daysInMonth[month - 1]
 }
+
+export function formatYearMonthLabel(month: string): string {
+  const match = /^(\d{4})-(0[1-9]|1[0-2])$/.exec(month)
+  if (!match) return month
+  return `${match[1]}年${Number(match[2])}月`
+}
