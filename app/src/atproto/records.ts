@@ -13,7 +13,7 @@ const LIST_RECORDS_LIMIT = 100
 // 「保存中」のまま固まるのを防ぐ（超過時は書き込み=maybe-saved / 読み取り=failed）
 const XRPC_TIMEOUT_MS = 30_000
 
-const timeoutSignal = () => AbortSignal.timeout(XRPC_TIMEOUT_MS)
+export const timeoutSignal = () => AbortSignal.timeout(XRPC_TIMEOUT_MS)
 
 const isAbortLike = (cause: unknown): boolean =>
   cause instanceof DOMException && (cause.name === 'TimeoutError' || cause.name === 'AbortError')
@@ -38,7 +38,7 @@ export class RecordClientError extends Error {
 
 type Operation = 'read' | 'write'
 
-function classifyError(cause: unknown, operation: Operation): RecordClientError {
+export function classifyError(cause: unknown, operation: Operation): RecordClientError {
   if (cause instanceof RecordClientError) return cause
 
   if (cause instanceof XRPCError) {

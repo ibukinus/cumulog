@@ -4,14 +4,17 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth, useLogs } from '../app/index'
 import { getAgent } from '../atproto/oauth'
 import { deleteLog, RecordClientError } from '../atproto/records'
-import { effectiveSpoilerLevel, rkeyFromAtUri, type LogEntry } from '../domain/index'
+import { createSharePost } from '../atproto/share'
+import { buildDefaultShareText, effectiveSpoilerLevel, rkeyFromAtUri, type LogEntry } from '../domain/index'
 import {
   Button,
   ConfirmDialog,
   EmptyState,
   ErrorState,
   Notice,
+  ShareDialog,
   SpoilerBadge,
+  Toast,
 } from '../ui/index'
 import styles from './LogDetail.module.css'
 
@@ -51,6 +54,10 @@ export function LogDetail() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  const [sharing, setSharing] = useState(false)
+  const [shareError, setShareError] = useState<RecordClientError | null>(null)
+  const [shareToast, setShareToast] = useState(false)
 
   if (status === 'idle' || status === 'loading') {
     return <main className={styles.page} aria-live="polite"><p>活動ログを読み込んでいます…</p></main>
@@ -72,6 +79,31 @@ export function LogDetail() {
   const openDeleteDialog = () => {
     setDeleteError(null)
     setDialogOpen(true)
+  }
+
+  const openShareDialog = () => {
+    setShareError(null)
+    setShareDialogOpen(true)
+  }
+
+  const handleShare = async (text: string) => {
+    if (sharing || entry.kind === 'unreadable') return
+    setSharing(true)
+    const agent = getAgent()
+    if (agent === null || session === null) {
+      setShareError(new RecordClientError('auth-expired'))
+      setSharing(false)
+      return
+    }
+    try {
+      await createSharePost(agent, session.did, text)
+      setShareDialogOpen(false)
+      setShareToast(true)
+      setSharing(false)
+    } catch (error) {
+      setShareError(error instanceof RecordClientError ? error : new RecordClientError('failed', error))
+      setSharing(false)
+    }
   }
 
   const handleDelete = async () => {
@@ -140,8 +172,17 @@ export function LogDetail() {
         <Field label="外部URL">{entry.record.urls?.length ? <ul className={styles.urlList}>{entry.record.urls.map((url) => <li key={url}>{isHttpUrl(url) ? <a href={url} target="_blank" rel="noopener noreferrer">{url}</a> : <span>{url}</span>}</li>)}</ul> : 'なし'}</Field>
         <Field label="ネタバレ"><SpoilerBadge level={effectiveSpoilerLevel(entry.record)} />{effectiveSpoilerLevel(entry.record) === 'none' && 'ネタバレなし'}</Field>
       </dl>
-      <div className={styles.actions}><Link className={styles.action} to={`/logs/${rkey}/edit`}>編集</Link><Button type="button" variant="danger" onClick={openDeleteDialog} disabled={deleting}>削除</Button></div>
+      <div className={styles.actions}><Link className={styles.action} to={`/logs/${rkey}/edit`}>編集</Link><Button type="button" onClick={openShareDialog} disabled={deleting || sharing}>Blueskyで共有</Button><Button type="button" variant="danger" onClick={openDeleteDialog} disabled={deleting || sharing}>削除</Button></div>
     </>}
+    {entry.kind === 'readable' && <ShareDialog open={shareDialogOpen} defaultText={buildDefaultShareText(entry.record)} submitting={sharing} error={shareError === null ? undefined : <ShareError kind={shareError.kind} />} onSubmit={(text) => void handleShare(text)} onCancel={() => setShareDialogOpen(false)} />}
     <ConfirmDialog open={dialogOpen} title="活動ログを削除しますか？" description={<DeleteDescription entry={entry} />} confirmLabel="削除する" cancelLabel="取り消す" confirmVariant="danger" onConfirm={() => void handleDelete()} onCancel={() => setDialogOpen(false)} />
+    {shareToast && <Toast message="Blueskyに投稿しました" onClose={() => setShareToast(false)} />}
   </main>
+}
+
+function ShareError({ kind }: { kind: RecordClientError['kind'] }) {
+  if (kind === 'auth-expired') return <><p>認証が切れたため、活動ログの共有投稿に失敗しました。活動ログの保存とは別の操作です。</p><Link to="/login">再ログイン</Link></>
+  if (kind === 'permission') return <><p>Blueskyへの投稿権限がないため共有できませんでした。再ログインすると共有権限を追加できます。活動ログの保存とは別の操作です。</p><Link to="/login">再ログイン</Link></>
+  if (kind === 'maybe-saved') return <p>活動ログの共有投稿がBlueskyに投稿されたか確認できませんでした。二重投稿を避けるため自動再試行はせず、Bluesky側で投稿をご確認ください。活動ログの保存とは別の操作です。</p>
+  return <p>活動ログの共有投稿に失敗しました。活動ログの保存とは別の操作です。文面を確認して、もう一度お試しください。</p>
 }
