@@ -1,5 +1,9 @@
 # 更新履歴
 
+## 2026-07-12
+
+* **Update**: 公開共有ページ（Should）を機能要件に追加。Bluesky共有投稿に活動ログへの導線が無く共有の価値が不足していたため、共有URLを受け取った人が未認証で単一の活動ログを閲覧できるページを定義（[05-functional/share-page.md](05-functional/share-page.md)を新設、[05-functional/index.md](05-functional/index.md)・[04-scope-and-priority.md](04-scope-and-priority.md)のShouldに追加）。あわせて閲覧範囲の例外を[03-publication-policy.md](03-publication-policy.md)に明記し、Mustの「自分の活動ログのみを表示・操作対象にする」とWon'tの「他ユーザーの公開ログ閲覧」を単一ログ閲覧を除く形に修正。[05-functional/bluesky-share.md](05-functional/bluesky-share.md)に投稿文面へ公開共有ページURLを含められる要件を追加。
+
 ## 2026-07-11
 
 * **Update**: [08-success-criteria.md](08-success-criteria.md) の同期漏れを修正。Mustリストにあるが成功条件に反映されていなかった項目（アカウント利用開始、ログイン状態確認、ログアウト、URL形式エラーの保存前確認、認証失効・権限不足の表示）を「MVPとしての成立」に追加。
