@@ -21,20 +21,20 @@ describe('buildDefaultShareText', () => {
     expect(text).toContain('活動日: 2026-07-12')
   })
 
-  it('外部URLは先頭の1件だけを改行して付加する', () => {
-    expect(buildDefaultShareText(record, shareUrl)).toContain('\nhttps://example.com/first')
-    expect(buildDefaultShareText(record, shareUrl)).not.toContain('https://example.com/second')
-  })
-
   it('共有ページURLを含める', () => {
     expect(buildDefaultShareText(record, shareUrl)).toContain(shareUrl)
   })
 
-  it('本文、共有ページURL、外部URLの順に並べる', () => {
+  it('外部URLが存在しても文面に含めない', () => {
+    const text = buildDefaultShareText(record, shareUrl)
+    expect(text).not.toContain('https://example.com/first')
+    expect(text).not.toContain('https://example.com/second')
+  })
+
+  it('本文と共有ページURLだけをこの順で含める', () => {
     expect(buildDefaultShareText(record, shareUrl).split('\n')).toEqual([
       '『展示を見に行った』の活動ログを記録しました（活動日: 2026-07-12）',
       shareUrl,
-      'https://example.com/first',
     ])
   })
 
