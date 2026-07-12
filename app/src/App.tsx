@@ -11,6 +11,7 @@ import {
   LogList,
   Settings,
 } from './screens/index'
+import { SharedLog } from './screens/SharedLog'
 
 function LoadingScreen() {
   return <main className="loading" aria-live="polite">読み込み中…</main>
@@ -70,6 +71,7 @@ function AppRoutes() {
   return (
     <LogsProvider>
       <Routes>
+        <Route path="share/:did/:rkey" element={<main className="app-content"><SharedLog /></main>} />
         <Route element={<AppLayout />}>
           <Route index element={<LandingRoute />} />
           <Route path="login" element={<Login />} />

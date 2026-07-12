@@ -82,6 +82,7 @@ export function LogDetail() {
   }
 
   const openShareDialog = () => {
+    if (session === null || rkey === undefined) return
     setShareError(null)
     setShareDialogOpen(true)
   }
@@ -174,7 +175,7 @@ export function LogDetail() {
       </dl>
       <div className={styles.actions}><Link className={styles.action} to={`/logs/${rkey}/edit`}>編集</Link><Button type="button" onClick={openShareDialog} disabled={deleting || sharing}>Blueskyで共有</Button><Button type="button" variant="danger" onClick={openDeleteDialog} disabled={deleting || sharing}>削除</Button></div>
     </>}
-    {entry.kind === 'readable' && <ShareDialog open={shareDialogOpen} defaultText={buildDefaultShareText(entry.record)} submitting={sharing} error={shareError === null ? undefined : <ShareError kind={shareError.kind} />} onSubmit={(text) => void handleShare(text)} onCancel={() => setShareDialogOpen(false)} />}
+    {entry.kind === 'readable' && session !== null && rkey !== undefined && <ShareDialog open={shareDialogOpen} defaultText={buildDefaultShareText(entry.record, `${window.location.origin}/share/${session.did}/${rkey}`)} submitting={sharing} error={shareError === null ? undefined : <ShareError kind={shareError.kind} />} onSubmit={(text) => void handleShare(text)} onCancel={() => setShareDialogOpen(false)} />}
     <ConfirmDialog open={dialogOpen} title="活動ログを削除しますか？" description={<DeleteDescription entry={entry} />} confirmLabel="削除する" cancelLabel="取り消す" confirmVariant="danger" onConfirm={() => void handleDelete()} onCancel={() => setDialogOpen(false)} />
     {shareToast && <Toast message="Blueskyに投稿しました" onClose={() => setShareToast(false)} />}
   </main>

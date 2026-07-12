@@ -15,14 +15,18 @@ export type DidDocument = {
 
 export class IdentityResolutionError extends Error {
   readonly cause?: unknown
+  // 解決先のHTTPステータス（HTTPエラー起因の場合のみ）。404の判定に用いる
+  readonly status?: number
 
   constructor(
     message: string,
     cause?: unknown,
+    status?: number,
   ) {
     super(message)
     this.name = 'IdentityResolutionError'
     this.cause = cause
+    this.status = status
   }
 }
 
@@ -34,7 +38,11 @@ async function fetchJson(url: URL, fetcher: typeof fetch): Promise<unknown> {
     throw new IdentityResolutionError('ID情報を取得できませんでした', cause)
   }
   if (!response.ok) {
-    throw new IdentityResolutionError(`ID情報の取得に失敗しました（HTTP ${response.status}）`)
+    throw new IdentityResolutionError(
+      `ID情報の取得に失敗しました（HTTP ${response.status}）`,
+      undefined,
+      response.status,
+    )
   }
   try {
     return await response.json()

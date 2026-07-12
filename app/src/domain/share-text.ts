@@ -1,7 +1,7 @@
 import type { CumulogLogRecord } from './types'
 
-export function buildDefaultShareText(record: CumulogLogRecord): string {
+export function buildDefaultShareText(record: CumulogLogRecord, shareUrl: string): string {
   const summary = `『${record.title}』の活動ログを記録しました（活動日: ${record.activityDate}）`
   const firstUrl = record.urls?.[0]
-  return firstUrl === undefined ? summary : `${summary}\n${firstUrl}`
+  return firstUrl === undefined ? `${summary}\n${shareUrl}` : `${summary}\n${shareUrl}\n${firstUrl}`
 }

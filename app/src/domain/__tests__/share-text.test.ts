@@ -12,21 +12,34 @@ const record: CumulogLogRecord = {
   spoiler: 'none',
   createdAt: '2026-07-12T00:00:00.000Z',
 }
+const shareUrl = 'https://cumulog.example/share/did:plc:alice/record-key'
 
 describe('buildDefaultShareText', () => {
   it('タイトルと活動日を含める', () => {
-    const text = buildDefaultShareText(record)
+    const text = buildDefaultShareText(record, shareUrl)
     expect(text).toContain('『展示を見に行った』')
     expect(text).toContain('活動日: 2026-07-12')
   })
 
   it('外部URLは先頭の1件だけを改行して付加する', () => {
-    expect(buildDefaultShareText(record)).toContain('\nhttps://example.com/first')
-    expect(buildDefaultShareText(record)).not.toContain('https://example.com/second')
+    expect(buildDefaultShareText(record, shareUrl)).toContain('\nhttps://example.com/first')
+    expect(buildDefaultShareText(record, shareUrl)).not.toContain('https://example.com/second')
+  })
+
+  it('共有ページURLを含める', () => {
+    expect(buildDefaultShareText(record, shareUrl)).toContain(shareUrl)
+  })
+
+  it('本文、共有ページURL、外部URLの順に並べる', () => {
+    expect(buildDefaultShareText(record, shareUrl).split('\n')).toEqual([
+      '『展示を見に行った』の活動ログを記録しました（活動日: 2026-07-12）',
+      shareUrl,
+      'https://example.com/first',
+    ])
   })
 
   it('メモとタグを含めない', () => {
-    const text = buildDefaultShareText(record)
+    const text = buildDefaultShareText(record, shareUrl)
     expect(text).not.toContain('これは共有しないメモ')
     expect(text).not.toContain('秘密のタグ')
   })
