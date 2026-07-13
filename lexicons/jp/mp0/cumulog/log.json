@@ -48,6 +48,17 @@
               "maxLength": 300
             }
           },
+          "emotions": {
+            "type": "array",
+            "description": "Emotion tags for the activity, distinct from general tags.",
+            "maxLength": 5,
+            "items": {
+              "type": "string",
+              "description": "An emotion tag for the activity.",
+              "maxGraphemes": 30,
+              "maxLength": 300
+            }
+          },
           "urls": {
             "type": "array",
             "description": "External URLs related to the activity.",
