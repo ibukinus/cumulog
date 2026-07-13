@@ -65,11 +65,13 @@ export const parseLogRecord = (uri: string, cid: string, value: unknown): LogEnt
   const category = optionalString(value, 'category')
   const subject = optionalString(value, 'subject')
   const tags = optionalStringArray(value, 'tags')
+  const emotions = optionalStringArray(value, 'emotions')
   const urls = optionalStringArray(value, 'urls')
   const note = optionalString(value, 'note')
   if (category !== undefined) record.category = category
   if (subject !== undefined) record.subject = subject
   if (tags !== undefined) record.tags = tags
+  if (emotions !== undefined) record.emotions = emotions
   if (urls !== undefined) record.urls = urls
   if (note !== undefined) record.note = note
 
@@ -94,6 +96,11 @@ export const sortLogEntries = (entries: LogEntry[]): LogEntry[] =>
 export const filterByTag = (entries: LogEntry[], tag: string): LogEntry[] =>
   entries.filter(
     (entry) => entry.kind === 'readable' && entry.record.tags?.includes(tag) === true,
+  )
+
+export const filterByEmotion = (entries: LogEntry[], emotion: string): LogEntry[] =>
+  entries.filter(
+    (entry) => entry.kind === 'readable' && entry.record.emotions?.includes(emotion) === true,
   )
 
 export const filterByCategory = (entries: LogEntry[], category: string): LogEntry[] =>
@@ -129,4 +136,14 @@ export const collectTags = (entries: LogEntry[]): string[] => {
     }
   }
   return [...tags]
+}
+
+export const collectEmotions = (entries: LogEntry[]): string[] => {
+  const emotions = new Set<string>()
+  for (const entry of entries) {
+    if (entry.kind === 'readable' && entry.record.emotions !== undefined) {
+      for (const emotion of entry.record.emotions) emotions.add(emotion)
+    }
+  }
+  return [...emotions]
 }

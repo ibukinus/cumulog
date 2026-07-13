@@ -42,6 +42,9 @@ export function RecordArticle({ record, children }: { record: CumulogLogRecord; 
     {record.tags !== undefined && record.tags.length > 0 && <ul className={styles.tags} aria-label="タグ">
       {record.tags.map((tag) => <li key={tag}>#{tag}</li>)}
     </ul>}
+    {record.emotions !== undefined && record.emotions.length > 0 && <ul className={styles.emotions} aria-label="感情タグ">
+      {record.emotions.map((emotion) => <li key={emotion}>感情：{emotion}</li>)}
+    </ul>}
     {record.urls !== undefined && record.urls.length > 0 && <ul className={styles.urls} aria-label="外部URL">
       {record.urls.map((url) => <li key={url}>
         <ExternalLinkIcon className={styles.icon} />

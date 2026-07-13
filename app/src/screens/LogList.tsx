@@ -5,6 +5,7 @@ import { useLogs } from '../app/index'
 import {
   effectiveSpoilerLevel,
   filterByCategory,
+  filterByEmotion,
   filterByMonth,
   filterBySubject,
   filterByTag,
@@ -19,12 +20,14 @@ import styles from './LogList.module.css'
 function LogRow({
   entry,
   onSelectTag,
+  onSelectEmotion,
   onSelectCategory,
   onSelectSubject,
   onSelectMonth,
 }: {
   entry: LogEntry
   onSelectTag: (tag: string) => void
+  onSelectEmotion: (emotion: string) => void
   onSelectCategory: (category: string) => void
   onSelectSubject: (subject: string) => void
   onSelectMonth: (month: string) => void
@@ -49,6 +52,10 @@ function LogRow({
   const handleCategoryClick = (event: MouseEvent<HTMLButtonElement>, category: string) => {
     event.stopPropagation()
     onSelectCategory(category)
+  }
+  const handleEmotionClick = (event: MouseEvent<HTMLButtonElement>, emotion: string) => {
+    event.stopPropagation()
+    onSelectEmotion(emotion)
   }
   const handleSubjectClick = (event: MouseEvent<HTMLButtonElement>, subject: string) => {
     event.stopPropagation()
@@ -132,6 +139,17 @@ function LogRow({
               #{tag}
             </button>
           ))}
+          {record.emotions?.map((emotion) => (
+            <button
+              className={styles.emotion}
+              type="button"
+              key={emotion}
+              aria-label={`感情「${emotion}」で絞り込み`}
+              onClick={(event) => handleEmotionClick(event, emotion)}
+            >
+              感情：{emotion}
+            </button>
+          ))}
           {record.urls && record.urls.length > 0 && (
             <span className={styles.urlIndicator} aria-label="外部URLあり" title="外部URLあり">
               <ExternalLinkIcon className={styles.icon} />
@@ -150,11 +168,14 @@ export function LogList() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const tag = searchParams.get('tag')
+  const emotion = searchParams.get('emotion')
   const category = searchParams.get('category')
   const subject = searchParams.get('subject')
   const month = searchParams.get('month')
   const selectedFilter = tag
     ? { kind: 'tag' as const, value: tag }
+    : emotion
+      ? { kind: 'emotion' as const, value: emotion }
     : category
       ? { kind: 'category' as const, value: category }
       : subject
@@ -166,6 +187,8 @@ export function LogList() {
     ? entries
     : selectedFilter.kind === 'tag'
       ? filterByTag(entries, selectedFilter.value)
+      : selectedFilter.kind === 'emotion'
+        ? filterByEmotion(entries, selectedFilter.value)
       : selectedFilter.kind === 'category'
         ? filterByCategory(entries, selectedFilter.value)
         : selectedFilter.kind === 'subject'
@@ -173,6 +196,7 @@ export function LogList() {
           : filterByMonth(entries, selectedFilter.value)
 
   const selectTag = (tag: string) => setSearchParams({ tag })
+  const selectEmotion = (emotion: string) => setSearchParams({ emotion })
   const selectCategory = (category: string) => setSearchParams({ category })
   const selectSubject = (subject: string) => setSearchParams({ subject })
   const selectMonth = (month: string) => setSearchParams({ month })
@@ -215,6 +239,7 @@ export function LogList() {
             key={entry.uri}
             entry={entry}
             onSelectTag={selectTag}
+            onSelectEmotion={selectEmotion}
             onSelectCategory={selectCategory}
             onSelectSubject={selectSubject}
             onSelectMonth={selectMonth}
@@ -235,6 +260,8 @@ export function LogList() {
           <span>
             {selectedFilter.kind === 'tag'
               ? `「#${selectedFilter.value}」で絞り込み中`
+              : selectedFilter.kind === 'emotion'
+                ? `感情「${selectedFilter.value}」で絞り込み中`
               : selectedFilter.kind === 'category'
                 ? `活動種別「${selectedFilter.value}」で絞り込み中`
                 : selectedFilter.kind === 'subject'
