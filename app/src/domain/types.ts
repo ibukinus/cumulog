@@ -6,8 +6,10 @@ export const TITLE_MAX_GRAPHEMES = 100
 export const CATEGORY_MAX_GRAPHEMES = 30
 export const SUBJECT_MAX_GRAPHEMES = 100
 export const TAG_MAX_GRAPHEMES = 30
+export const EMOTION_MAX_GRAPHEMES = 30
 export const NOTE_MAX_GRAPHEMES = 1000
 export const TAGS_MAX_ITEMS = 20
+export const EMOTIONS_MAX_ITEMS = 5
 export const URLS_MAX_ITEMS = 10
 export const URL_MAX_LENGTH = 2000
 
@@ -16,6 +18,7 @@ export const TITLE_MAX_BYTES = 1000
 export const CATEGORY_MAX_BYTES = 300
 export const SUBJECT_MAX_BYTES = 1000
 export const TAG_MAX_BYTES = 300
+export const EMOTION_MAX_BYTES = 300
 export const NOTE_MAX_BYTES = 10000
 
 export interface CumulogLogRecord {
@@ -25,6 +28,7 @@ export interface CumulogLogRecord {
   category?: string
   subject?: string
   tags?: string[]
+  emotions?: string[]
   urls?: string[]
   note?: string
   spoiler: SpoilerLevel

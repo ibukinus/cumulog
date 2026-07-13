@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth, useLogs } from '../app/index'
 import { getAgent } from '../atproto/oauth'
 import { RecordClientError, updateLog } from '../atproto/records'
-import { collectCategories, collectTags, CUMULOG_LOG_COLLECTION, rkeyFromAtUri, type ActivityLogRecordInput, type CumulogLogRecord } from '../domain/index'
+import { collectCategories, collectEmotions, collectTags, CUMULOG_LOG_COLLECTION, rkeyFromAtUri, type ActivityLogRecordInput, type CumulogLogRecord } from '../domain/index'
 import { Button, ErrorState, Notice } from '../ui/index'
 import { LogForm } from './LogForm'
 
@@ -79,12 +79,14 @@ export function LogEdit() {
       category: record.category ?? '',
       subject: record.subject ?? '',
       tags: record.tags ?? [],
+      emotions: record.emotions ?? [],
       urls: record.urls ?? [],
       note: record.note ?? '',
       spoiler: record.spoiler,
     }}
     categorySuggestions={collectCategories(logs.entries)}
     tagSuggestions={collectTags(logs.entries)}
+    emotionSuggestions={collectEmotions(logs.entries)}
     saving={saving}
     saveError={errorContent()}
     onSave={save}

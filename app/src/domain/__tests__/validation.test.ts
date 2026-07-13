@@ -7,6 +7,7 @@ const baseInput = (): ActivityLogFormInput => ({
   category: '',
   subject: '',
   tags: [],
+  emotions: [],
   urls: [],
   note: '',
 })
@@ -35,6 +36,17 @@ describe('validateActivityLog', () => {
     expect(validateActivityLog({ ...baseInput(), tags: [' foo ', '', '  ', 'bar'] })).toMatchObject({ ok: true, value: { tags: ['foo', 'bar'] } })
     expect(validateActivityLog({ ...baseInput(), tags: ['foo', ' foo '] }).ok).toBe(false)
     expect(validateActivityLog({ ...baseInput(), tags: Array.from({ length: 21 }, (_, i) => String(i)) }).ok).toBe(false)
+  })
+
+  it('感情タグを正規化し、空要素を除去して保存する', () => {
+    expect(validateActivityLog({ ...baseInput(), emotions: [' 楽しかった ', '', '  ', '感動'] })).toMatchObject({ ok: true, value: { emotions: ['楽しかった', '感動'] } })
+  })
+
+  it('感情タグの重複・件数・書記素数・バイト数を検証する', () => {
+    expect(validateActivityLog({ ...baseInput(), emotions: ['感動', ' 感動 '] })).toMatchObject({ ok: false, errors: [{ field: 'emotions', message: '感情タグに重複があります。異なる感情タグを入力してください。' }] })
+    expect(validateActivityLog({ ...baseInput(), emotions: Array.from({ length: 6 }, (_, i) => String(i)) }).ok).toBe(false)
+    expect(validateActivityLog({ ...baseInput(), emotions: ['あ'.repeat(31)] }).ok).toBe(false)
+    expect(validateActivityLog({ ...baseInput(), emotions: ['👨‍👩‍👧‍👦'.repeat(13)] }).ok).toBe(false)
   })
 
   it('http/https URLのみ受け付け、件数を検証する', () => {

@@ -3,7 +3,7 @@ type: Design Document
 title: Lexicon・データ設計
 description: 活動ログレコード（jp.mp0.cumulog.log）のLexicon設計。項目の型、文字数上限、件数上限、バリデーション条件を定義する。
 tags: [cumulog, 基本設計, lexicon, データ設計, atproto]
-timestamp: 2026-07-11
+timestamp: 2026-07-13
 ---
 
 # Lexicon・データ設計
@@ -26,6 +26,7 @@ timestamp: 2026-07-11
 | 活動種別 | `category` | string | 任意 | 30書記素（maxLength 300） |
 | 対象名 | `subject` | string | 任意 | 100書記素（maxLength 1000） |
 | タグ | `tags` | string の array | 任意 | 20件、各30書記素（maxLength 300） |
+| 感情タグ | `emotions` | string の array | 任意 | 5件、各30書記素（maxLength 300） |
 | 外部URL | `urls` | string（format: `uri`）の array | 任意 | 10件、各2000文字 |
 | メモ | `note` | string | 任意 | 1000書記素（maxLength 10000） |
 | ネタバレ | `spoiler` | string（knownValues: `none` / `minor` / `major`） | 必須 | — |
@@ -60,6 +61,13 @@ timestamp: 2026-07-11
 * 前後の空白はトリムして保存する
 * 同一レコード内の重複タグは登録できない。重複判定は文字列の完全一致（トリム後）で行う
 * 表記ゆれ統合・正規化（大文字小文字、全角半角）はMVPでは行わない
+
+### emotions（感情タグ）
+
+* 活動に対する感情を自由入力のタグとして記録する。固定の感情マスタ・選択肢は持たない（活動種別・タグと同じく、既存ログの値を入力候補として表示する方針に揃える）
+* 通常のタグ（`tags`）とは別プロパティとして扱い、表示・絞り込みでも区別する（[要件: 感情タグ](../docs/05-functional/emotion-tag.md)）
+* 空文字列・空白のみの扱い、前後空白のトリム、同一レコード内の重複禁止（トリム後の完全一致判定）は `tags` と同じとする
+* 件数上限は5件とする。感情は1つの活動に対して少数という想定にもとづく設計値であり、実利用の知見により将来変更してよい
 
 ### urls（外部URL）
 

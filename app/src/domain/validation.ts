@@ -3,6 +3,9 @@ import { isValidActivityDate } from './date'
 import {
   CATEGORY_MAX_BYTES,
   CATEGORY_MAX_GRAPHEMES,
+  EMOTIONS_MAX_ITEMS,
+  EMOTION_MAX_BYTES,
+  EMOTION_MAX_GRAPHEMES,
   NOTE_MAX_BYTES,
   NOTE_MAX_GRAPHEMES,
   SUBJECT_MAX_BYTES,
@@ -22,6 +25,7 @@ export interface ActivityLogFormInput {
   category: string
   subject: string
   tags: string[]
+  emotions: string[]
   urls: string[]
   note: string
   spoiler?: SpoilerLevel
@@ -74,6 +78,7 @@ export function validateActivityLog(input: ActivityLogFormInput): ValidationResu
   const subject = normalizeText(input.subject)
   const note = normalizeText(input.note)
   const tags = input.tags.map(normalizeText).filter((tag) => tag !== '')
+  const emotions = input.emotions.map(normalizeText).filter((emotion) => emotion !== '')
   const urls = input.urls.map((url) => url.trim()).filter((url) => url !== '')
 
   if (title === '') {
@@ -119,6 +124,19 @@ export function validateActivityLog(input: ActivityLogFormInput): ValidationResu
     errors.push({ field: 'tags', message: `タグ${BYTE_LIMIT_MESSAGE}` })
   }
 
+  const duplicateEmotion = emotions.find((emotion, index) => emotions.indexOf(emotion) !== index)
+  if (duplicateEmotion !== undefined) {
+    errors.push({ field: 'emotions', message: '感情タグに重複があります。異なる感情タグを入力してください。' })
+  }
+  if (emotions.length > EMOTIONS_MAX_ITEMS) {
+    errors.push({ field: 'emotions', message: `感情タグは${EMOTIONS_MAX_ITEMS}件以内にしてください。` })
+  }
+  if (emotions.some((emotion) => graphemeLength(emotion) > EMOTION_MAX_GRAPHEMES)) {
+    errors.push({ field: 'emotions', message: `各感情タグは${EMOTION_MAX_GRAPHEMES}文字以内で入力してください。` })
+  } else if (emotions.some((emotion) => byteLength(emotion) > EMOTION_MAX_BYTES)) {
+    errors.push({ field: 'emotions', message: `感情タグ${BYTE_LIMIT_MESSAGE}` })
+  }
+
   if (urls.length > URLS_MAX_ITEMS) {
     errors.push({ field: 'urls', message: `外部URLは${URLS_MAX_ITEMS}件以内にしてください。` })
   }
@@ -147,6 +165,7 @@ export function validateActivityLog(input: ActivityLogFormInput): ValidationResu
   addOptionalText(value, 'subject', subject)
   addOptionalText(value, 'note', note)
   if (tags.length > 0) value.tags = tags
+  if (emotions.length > 0) value.emotions = emotions
   if (urls.length > 0) value.urls = urls
   return { ok: true, value }
 }

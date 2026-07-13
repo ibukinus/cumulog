@@ -10,6 +10,7 @@ type LogFormProps = {
   initialValue: ActivityLogFormInput
   categorySuggestions: string[]
   tagSuggestions: string[]
+  emotionSuggestions: string[]
   saving: boolean
   saveError: ReactNode | null
   onSave: (value: ActivityLogRecordInput) => Promise<void>
@@ -29,14 +30,17 @@ function displayValue(value: string | undefined): string {
   return value === undefined || value === '' ? 'なし' : value
 }
 
-export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestions, saving, saveError, onSave }: LogFormProps) {
+export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestions, emotionSuggestions, saving, saveError, onSave }: LogFormProps) {
   const [value, setValue] = useState(initialValue)
   const [errors, setErrors] = useState<FieldError[]>([])
   const [confirmedValue, setConfirmedValue] = useState<ActivityLogRecordInput | null>(null)
   const [tagDraft, setTagDraft] = useState('')
+  const [emotionDraft, setEmotionDraft] = useState('')
   const categoryListId = useId()
   const tagListId = useId()
+  const emotionListId = useId()
   const tagsError = errorFor(errors, 'tags')
+  const emotionsError = errorFor(errors, 'emotions')
   const urlsError = errorFor(errors, 'urls')
   const spoilerError = errorFor(errors, 'spoiler')
 
@@ -53,6 +57,12 @@ export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestion
 
   function addUrl() {
     update('urls', [...value.urls, ''])
+  }
+
+  function addEmotion() {
+    if (emotionDraft.trim() === '') return
+    update('emotions', [...value.emotions, emotionDraft])
+    setEmotionDraft('')
   }
 
   function proceed(event: FormEvent<HTMLFormElement>) {
@@ -81,6 +91,7 @@ export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestion
         <div><dt>活動種別</dt><dd>{displayValue(confirmedValue.category)}</dd></div>
         <div><dt>対象名</dt><dd>{displayValue(confirmedValue.subject)}</dd></div>
         <div><dt>タグ</dt><dd>{confirmedValue.tags?.length ? confirmedValue.tags.join('、') : 'なし'}</dd></div>
+        <div><dt>感情タグ</dt><dd>{confirmedValue.emotions?.length ? confirmedValue.emotions.join('、') : 'なし'}</dd></div>
         <div><dt>外部URL</dt><dd>{confirmedValue.urls?.length ? <ul>{confirmedValue.urls.map((url) => <li key={url}>{url}</li>)}</ul> : 'なし'}</dd></div>
         <div><dt>メモ</dt><dd className={styles.preWrap}>{displayValue(confirmedValue.note)}</dd></div>
         <div><dt>ネタバレ</dt><dd>{spoiler?.label ?? 'ネタバレなし'}{confirmedValue.spoiler !== 'none' && spoiler ? `（${spoiler.description}）` : ''}</dd></div>
@@ -111,6 +122,17 @@ export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestion
         </div>
         <datalist id={tagListId}>{tagSuggestions.map((tag) => <option key={tag} value={tag} />)}</datalist>
         {tagsError && <p id="tags-error" className={styles.fieldError} role="alert">⚠ {tagsError}</p>}
+      </fieldset>
+
+      <fieldset className={styles.group} aria-describedby={emotionsError ? 'emotions-error' : undefined}>
+        <legend>感情タグ</legend>
+        {value.emotions.length > 0 && <ul className={styles.chips}>{value.emotions.map((emotion, index) => <li key={`${emotion}-${index}`}><span>{emotion}</span><button type="button" aria-label={`${emotion}を削除`} onClick={() => update('emotions', value.emotions.filter((_, itemIndex) => itemIndex !== index))}>×</button></li>)}</ul>}
+        <div className={styles.inlineInput}>
+          <input aria-label="追加する感情タグ" list={emotionListId} value={emotionDraft} onChange={(event) => setEmotionDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addEmotion() } }} />
+          <Button type="button" variant="secondary" onClick={addEmotion}>追加</Button>
+        </div>
+        <datalist id={emotionListId}>{emotionSuggestions.map((emotion) => <option key={emotion} value={emotion} />)}</datalist>
+        {emotionsError && <p id="emotions-error" className={styles.fieldError} role="alert">⚠ {emotionsError}</p>}
       </fieldset>
 
       <fieldset className={styles.group} aria-describedby={urlsError ? 'urls-error' : undefined}>
