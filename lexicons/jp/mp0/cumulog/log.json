@@ -56,7 +56,21 @@
               "type": "string",
               "description": "An emotion tag for the activity.",
               "maxGraphemes": 30,
-              "maxLength": 300
+              "maxLength": 300,
+              "knownValues": [
+                "fun",
+                "happy",
+                "moved",
+                "excited",
+                "anticipation",
+                "accomplished",
+                "healed",
+                "surprised",
+                "bittersweet",
+                "sad",
+                "tired",
+                "frustrated"
+              ]
             }
           },
           "urls": {
