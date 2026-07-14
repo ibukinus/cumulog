@@ -137,13 +137,3 @@ export const collectTags = (entries: LogEntry[]): string[] => {
   }
   return [...tags]
 }
-
-export const collectEmotions = (entries: LogEntry[]): string[] => {
-  const emotions = new Set<string>()
-  for (const entry of entries) {
-    if (entry.kind === 'readable' && entry.record.emotions !== undefined) {
-      for (const emotion of entry.record.emotions) emotions.add(emotion)
-    }
-  }
-  return [...emotions]
-}

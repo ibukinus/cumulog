@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth, useLogs } from '../app/index'
 import { getAgent } from '../atproto/oauth'
 import { createLog, RecordClientError } from '../atproto/records'
-import { collectCategories, collectEmotions, collectTags, type ActivityLogRecordInput } from '../domain/index'
+import { collectCategories, collectTags, type ActivityLogRecordInput } from '../domain/index'
 import { Button, Notice } from '../ui/index'
 import { LogForm } from './LogForm'
 
@@ -62,7 +62,6 @@ export function LogCreate() {
     initialValue={{ title: '', activityDate: today(), category: '', subject: '', tags: [], emotions: [], urls: [], note: '', spoiler: 'none' }}
     categorySuggestions={collectCategories(entries)}
     tagSuggestions={collectTags(entries)}
-    emotionSuggestions={collectEmotions(entries)}
     saving={saving}
     saveError={errorContent()}
     onSave={save}

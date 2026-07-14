@@ -10,6 +10,7 @@ import {
   filterBySubject,
   filterByTag,
   formatYearMonthLabel,
+  emotionLabel,
   rkeyFromAtUri,
   type LogEntry,
 } from '../domain/index'
@@ -144,10 +145,10 @@ function LogRow({
               className={styles.emotion}
               type="button"
               key={emotion}
-              aria-label={`感情「${emotion}」で絞り込み`}
+              aria-label={`感情「${emotionLabel(emotion)}」で絞り込み`}
               onClick={(event) => handleEmotionClick(event, emotion)}
             >
-              感情：{emotion}
+              感情：{emotionLabel(emotion)}
             </button>
           ))}
           {record.urls && record.urls.length > 0 && (
@@ -261,7 +262,7 @@ export function LogList() {
             {selectedFilter.kind === 'tag'
               ? `「#${selectedFilter.value}」で絞り込み中`
               : selectedFilter.kind === 'emotion'
-                ? `感情「${selectedFilter.value}」で絞り込み中`
+                ? `感情「${emotionLabel(selectedFilter.value)}」で絞り込み中`
               : selectedFilter.kind === 'category'
                 ? `活動種別「${selectedFilter.value}」で絞り込み中`
                 : selectedFilter.kind === 'subject'

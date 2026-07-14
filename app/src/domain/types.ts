@@ -2,6 +2,24 @@ export const CUMULOG_LOG_COLLECTION = 'jp.mp0.cumulog.log'
 
 export type SpoilerLevel = 'none' | 'minor' | 'major'
 
+export const EMOTION_PRESETS: ReadonlyArray<{ value: string; label: string }> = [
+  { value: 'fun', label: '楽しい' },
+  { value: 'happy', label: '嬉しい' },
+  { value: 'moved', label: '感動' },
+  { value: 'excited', label: '興奮' },
+  { value: 'anticipation', label: '楽しみ' },
+  { value: 'accomplished', label: '達成感' },
+  { value: 'healed', label: '癒やし' },
+  { value: 'surprised', label: '驚き' },
+  { value: 'bittersweet', label: '切ない' },
+  { value: 'sad', label: '悲しい' },
+  { value: 'tired', label: '疲れた' },
+  { value: 'frustrated', label: '悔しい' },
+]
+
+export const emotionLabel = (value: string): string =>
+  EMOTION_PRESETS.find((preset) => preset.value === value)?.label ?? value
+
 export const TITLE_MAX_GRAPHEMES = 100
 export const CATEGORY_MAX_GRAPHEMES = 30
 export const SUBJECT_MAX_GRAPHEMES = 100
