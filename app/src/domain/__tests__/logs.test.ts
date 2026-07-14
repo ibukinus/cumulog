@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
   collectCategories,
-  collectEmotions,
   collectTags,
   effectiveSpoilerLevel,
   filterByCategory,
@@ -38,7 +37,7 @@ describe('parseLogRecord', () => {
   })
 
   it('感情タグを読み込む', () => {
-    expect(readable({ ...baseRecord, emotions: ['感動'] }).record.emotions).toEqual(['感動'])
+    expect(readable({ ...baseRecord, emotions: ['moved'] }).record.emotions).toEqual(['moved'])
   })
 
   it.each(['title', 'activityDate', 'spoiler', 'createdAt'])('必須項目 %s の欠落をunreadableとする', (key) => {
@@ -135,10 +134,10 @@ describe('filterByTag and collectors', () => {
 
   it('感情タグは完全一致だけを返す', () => {
     const entries = [
-      readable({ ...baseRecord, emotions: ['楽しい'] }),
-      readable({ ...baseRecord, emotions: ['楽しかった'] }),
+      readable({ ...baseRecord, emotions: ['fun'] }),
+      readable({ ...baseRecord, emotions: ['fun-extra'] }),
     ]
-    expect(filterByEmotion(entries, '楽しい')).toHaveLength(1)
+    expect(filterByEmotion(entries, 'fun')).toHaveLength(1)
   })
 
   it('活動種別とタグの候補から重複を除く', () => {
@@ -149,10 +148,6 @@ describe('filterByTag and collectors', () => {
     ]
     expect(collectCategories(entries)).toEqual(['映画', '読書'])
     expect(collectTags(entries)).toEqual(['a', 'b', 'c'])
-    expect(collectEmotions([
-      readable({ ...baseRecord, emotions: ['感動', '達成感'] }),
-      readable({ ...baseRecord, emotions: ['達成感', '安心'] }),
-    ])).toEqual(['感動', '達成感', '安心'])
   })
 })
 

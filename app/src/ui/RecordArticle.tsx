@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { effectiveSpoilerLevel } from '../domain/index'
+import { effectiveSpoilerLevel, emotionLabel } from '../domain/index'
 import type { CumulogLogRecord } from '../domain/types'
 import { ExternalLinkIcon } from './icons'
 import { SpoilerBadge } from './SpoilerBadge'
@@ -43,7 +43,7 @@ export function RecordArticle({ record, children }: { record: CumulogLogRecord; 
       {record.tags.map((tag) => <li key={tag}>#{tag}</li>)}
     </ul>}
     {record.emotions !== undefined && record.emotions.length > 0 && <ul className={styles.emotions} aria-label="感情タグ">
-      {record.emotions.map((emotion) => <li key={emotion}>感情：{emotion}</li>)}
+      {record.emotions.map((emotion) => <li key={emotion}>感情：{emotionLabel(emotion)}</li>)}
     </ul>}
     {record.urls !== undefined && record.urls.length > 0 && <ul className={styles.urls} aria-label="外部URL">
       {record.urls.map((url) => <li key={url}>

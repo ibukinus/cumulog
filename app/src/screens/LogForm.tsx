@@ -1,7 +1,6 @@
 import { useId, useState, type FormEvent, type ReactNode } from 'react'
 
-import type { ActivityLogFormInput, ActivityLogRecordInput, FieldError, SpoilerLevel } from '../domain/index'
-import { validateActivityLog } from '../domain/index'
+import { EMOTIONS_MAX_ITEMS, EMOTION_PRESETS, emotionLabel, validateActivityLog, type ActivityLogFormInput, type ActivityLogRecordInput, type FieldError, type SpoilerLevel } from '../domain/index'
 import { Button, Notice, TextArea, TextField } from '../ui/index'
 import styles from './LogForm.module.css'
 
@@ -10,7 +9,6 @@ type LogFormProps = {
   initialValue: ActivityLogFormInput
   categorySuggestions: string[]
   tagSuggestions: string[]
-  emotionSuggestions: string[]
   saving: boolean
   saveError: ReactNode | null
   onSave: (value: ActivityLogRecordInput) => Promise<void>
@@ -30,15 +28,14 @@ function displayValue(value: string | undefined): string {
   return value === undefined || value === '' ? 'なし' : value
 }
 
-export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestions, emotionSuggestions, saving, saveError, onSave }: LogFormProps) {
+export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestions, saving, saveError, onSave }: LogFormProps) {
   const [value, setValue] = useState(initialValue)
   const [errors, setErrors] = useState<FieldError[]>([])
   const [confirmedValue, setConfirmedValue] = useState<ActivityLogRecordInput | null>(null)
   const [tagDraft, setTagDraft] = useState('')
-  const [emotionDraft, setEmotionDraft] = useState('')
+  const [extraEmotions, setExtraEmotions] = useState(() => initialValue.emotions.filter((emotion) => !EMOTION_PRESETS.some((preset) => preset.value === emotion)))
   const categoryListId = useId()
   const tagListId = useId()
-  const emotionListId = useId()
   const tagsError = errorFor(errors, 'tags')
   const emotionsError = errorFor(errors, 'emotions')
   const urlsError = errorFor(errors, 'urls')
@@ -59,10 +56,16 @@ export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestion
     update('urls', [...value.urls, ''])
   }
 
-  function addEmotion() {
-    if (emotionDraft.trim() === '') return
-    update('emotions', [...value.emotions, emotionDraft])
-    setEmotionDraft('')
+  function toggleEmotion(emotion: string, checked: boolean) {
+    if (checked) {
+      if (value.emotions.length >= EMOTIONS_MAX_ITEMS || value.emotions.includes(emotion)) return
+      update('emotions', [...value.emotions, emotion])
+    } else {
+      update('emotions', value.emotions.filter((item) => item !== emotion))
+      if (!EMOTION_PRESETS.some((preset) => preset.value === emotion)) {
+        setExtraEmotions((current) => current.filter((item) => item !== emotion))
+      }
+    }
   }
 
   function proceed(event: FormEvent<HTMLFormElement>) {
@@ -91,7 +94,7 @@ export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestion
         <div><dt>活動種別</dt><dd>{displayValue(confirmedValue.category)}</dd></div>
         <div><dt>対象名</dt><dd>{displayValue(confirmedValue.subject)}</dd></div>
         <div><dt>タグ</dt><dd>{confirmedValue.tags?.length ? confirmedValue.tags.join('、') : 'なし'}</dd></div>
-        <div><dt>感情タグ</dt><dd>{confirmedValue.emotions?.length ? confirmedValue.emotions.join('、') : 'なし'}</dd></div>
+        <div><dt>感情タグ</dt><dd>{confirmedValue.emotions?.length ? confirmedValue.emotions.map(emotionLabel).join('、') : 'なし'}</dd></div>
         <div><dt>外部URL</dt><dd>{confirmedValue.urls?.length ? <ul>{confirmedValue.urls.map((url) => <li key={url}>{url}</li>)}</ul> : 'なし'}</dd></div>
         <div><dt>メモ</dt><dd className={styles.preWrap}>{displayValue(confirmedValue.note)}</dd></div>
         <div><dt>ネタバレ</dt><dd>{spoiler?.label ?? 'ネタバレなし'}{confirmedValue.spoiler !== 'none' && spoiler ? `（${spoiler.description}）` : ''}</dd></div>
@@ -126,12 +129,20 @@ export function LogForm({ mode, initialValue, categorySuggestions, tagSuggestion
 
       <fieldset className={styles.group} aria-describedby={emotionsError ? 'emotions-error' : undefined}>
         <legend>感情タグ</legend>
-        {value.emotions.length > 0 && <ul className={styles.chips}>{value.emotions.map((emotion, index) => <li key={`${emotion}-${index}`}><span>{emotion}</span><button type="button" aria-label={`${emotion}を削除`} onClick={() => update('emotions', value.emotions.filter((_, itemIndex) => itemIndex !== index))}>×</button></li>)}</ul>}
-        <div className={styles.inlineInput}>
-          <input aria-label="追加する感情タグ" list={emotionListId} value={emotionDraft} onChange={(event) => setEmotionDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addEmotion() } }} />
-          <Button type="button" variant="secondary" onClick={addEmotion}>追加</Button>
+        <div className={styles.emotionChips}>
+          {[...EMOTION_PRESETS, ...extraEmotions.map((value) => ({ value, label: emotionLabel(value) }))].map((emotion) => {
+            const checked = value.emotions.includes(emotion.value)
+            return <label className={styles.emotionChip} key={emotion.value}>
+              <input
+                type="checkbox"
+                checked={checked}
+                disabled={!checked && value.emotions.length >= EMOTIONS_MAX_ITEMS}
+                onChange={(event) => toggleEmotion(emotion.value, event.target.checked)}
+              />
+              <span>{emotion.label}</span>
+            </label>
+          })}
         </div>
-        <datalist id={emotionListId}>{emotionSuggestions.map((emotion) => <option key={emotion} value={emotion} />)}</datalist>
         {emotionsError && <p id="emotions-error" className={styles.fieldError} role="alert">⚠ {emotionsError}</p>}
       </fieldset>
 
